@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 interface UploadDropzoneProps {
-  onFileUpload: (data: any) => void
+  onFileUpload: (data: { rrwebEvents: any[]; xhrEvents: any[] }) => void;
 }
 
 const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
@@ -10,21 +10,24 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
     const file = acceptedFiles[0]
     const reader = new FileReader()
   
-    reader.onload = (event) => {
+    reader.onload = (event: ProgressEvent<FileReader>) => {
       try {
-        const parsedData = JSON.parse(event.target?.result as string)
-        if (parsedData.rrwebEvents && Array.isArray(parsedData.rrwebEvents) &&
-            parsedData.xhrEvents && Array.isArray(parsedData.xhrEvents)) {
-          onFileUpload({
-            rrwebEvents: parsedData.rrwebEvents,
-            xhrEvents: parsedData.xhrEvents
-          })
-        } else {
-          throw new Error('Invalid JSON structure: missing or invalid rrwebEvents or xhrEvents')
+        const result = event.target?.result;
+        if (typeof result === 'string') {
+          const parsedData = JSON.parse(result);
+          if (parsedData.rrwebEvents && Array.isArray(parsedData.rrwebEvents) &&
+              parsedData.xhrEvents && Array.isArray(parsedData.xhrEvents)) {
+            onFileUpload({
+              rrwebEvents: parsedData.rrwebEvents,
+              xhrEvents: parsedData.xhrEvents
+            });
+          } else {
+            throw new Error('Invalid JSON structure: missing or invalid rrwebEvents or xhrEvents');
+          }
         }
       } catch (error) {
-        console.error('Error parsing JSON:', error)
-        alert('Invalid JSON file. Please upload a valid JSON file with rrwebEvents and xhrEvents.')
+        console.error('Error parsing JSON:', error);
+        alert('Invalid JSON file. Please upload a valid JSON file with rrwebEvents and xhrEvents.');
       }
     }
   

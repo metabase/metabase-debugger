@@ -13,7 +13,21 @@ interface RRWebPlayerProps {
 const RRWebPlayer: React.FC<RRWebPlayerProps> = ({ jsonData, onTimeUpdate }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<rrwebPlayer | null>(null);
-  const [startTimestamp, setStartTimestamp] = useState<number>(0);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const { width } = containerRef.current.getBoundingClientRect();
+        setDimensions({ width, height: width * 0.5625 }); // 16:9 aspect ratio
+      }
+    };
+
+    window.addEventListener('resize', updateDimensions);
+    updateDimensions();
+
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
 
   useEffect(() => {
     if (containerRef.current && jsonData && jsonData.rrwebEvents.length > 0) {
@@ -25,15 +39,14 @@ const RRWebPlayer: React.FC<RRWebPlayerProps> = ({ jsonData, onTimeUpdate }) => 
 
       // Set the start timestamp from the first event
       const firstEventTimestamp = jsonData.rrwebEvents[0].timestamp;
-      setStartTimestamp(firstEventTimestamp);
 
       // Create new player instance
       playerRef.current = new rrwebPlayer({
         target: containerRef.current,
         props: {
           events: jsonData.rrwebEvents,
-          width: 800,
-          height: 600,
+          width: dimensions.width,
+          height: dimensions.height,
         },
       });
 
@@ -50,12 +63,10 @@ const RRWebPlayer: React.FC<RRWebPlayerProps> = ({ jsonData, onTimeUpdate }) => 
         playerRef.current.pause();
       }
     };
-  }, [jsonData, onTimeUpdate]);
+  }, [jsonData, dimensions]);
 
   return (
-    <div>
-      <div ref={containerRef} />
-    </div>
+    <div ref={containerRef} style={{ width: '100%', height: 'auto' }} />
   );
 };
 

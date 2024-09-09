@@ -1,4 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import XHREventDetails from './XHREventDetails';
 
 interface XHREvent {
   request: {
@@ -8,6 +18,7 @@ interface XHREvent {
   };
   response: {
     status: number;
+    responseText: string;
   };
 }
 
@@ -18,6 +29,9 @@ interface XHREventsTableProps {
 }
 
 const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime, startTimestamp }) => {
+  const [selectedEvent, setSelectedEvent] = useState<XHREvent | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   const sortedEvents = useMemo(() => 
     [...xhrEvents].sort((a, b) => a.request.timestamp - b.request.timestamp),
     [xhrEvents]
@@ -28,33 +42,52 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
   }, [sortedEvents, currentTime, startTimestamp]);
 
   const getRowStyle = (index: number) => {
-    return index === currentEventIndex ? 'bg-yellow-200' : '';
+    return index === currentEventIndex ? 'bg-accent/20' : '';
+  };
+
+  const handleRowClick = (event: XHREvent) => {
+    setSelectedEvent(event);
+    setIsSheetOpen(true);
   };
 
   return (
-    <div className="overflow-auto h-[600px] w-[400px]">
-      <table className="min-w-full">
-        <thead>
-          <tr>
-            <th className="px-4 py-2">Method</th>
-            <th className="px-4 py-2">URL</th>
-            <th className="px-4 py-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedEvents.map((event, index) => (
-            <tr
-              key={index}
-              className={getRowStyle(index)}
-            >
-              <td className="px-4 py-2">{event.request.method}</td>
-              <td className="px-4 py-2">{event.request.url}</td>
-              <td className="px-4 py-2">{event.response.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <ScrollArea className="h-[calc(100vh-200px)] w-full rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Method</TableHead>
+              <TableHead>URL</TableHead>
+              <TableHead className="w-[100px]">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedEvents.map((event, index) => (
+              <TableRow 
+                key={index} 
+                className={`${getRowStyle(index)} cursor-pointer hover:bg-muted/50`}
+                onClick={() => handleRowClick(event)}
+              >
+                <TableCell>{event.request.method}</TableCell>
+                <TableCell className="font-mono">
+                  {event.request.url.length > 60
+                    ? `${event.request.url.substring(0, 57)}...`
+                    : event.request.url}
+                </TableCell>
+                <TableCell>{event.response.status}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+      {selectedEvent && (
+        <XHREventDetails 
+          event={selectedEvent} 
+          isOpen={isSheetOpen}
+          onOpenChange={setIsSheetOpen}
+        />
+      )}
+    </>
   );
 };
 

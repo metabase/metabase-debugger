@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import UploadDropzone from '@/components/UploadDropzone'
-import RRWebPlayer from '@/components/RRWebPlayer'
-import XHREventsTable from '@/components/XHREventsTable'
+import DevToolsUI from '@/components/DevToolsUi'
+import Image from 'next/image'
 
 export default function Home() {
   const [jsonData, setJsonData] = useState<{ rrwebEvents: any[], xhrEvents: any[] } | null>(null)
@@ -21,23 +21,27 @@ export default function Home() {
   }
 
   const handleTimeUpdate = (time: number) => {
-    console.log('time', time)
     setCurrentTime(time);
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">Replayed session</h1>
+    <main className="min-h-screen flex flex-col">
+      <h1 className="text-4xl font-semibold flex items-center">
+        <Image
+          src="/metabase.webp"
+          alt="Metabase Logo"
+          width={280}
+          height={40}
+        />
+        Debugger
+      </h1>
       {!jsonData ? (
-        <UploadDropzone onFileUpload={handleFileUpload} />
+        <div className="flex-grow flex items-center justify-center">
+          <UploadDropzone onFileUpload={handleFileUpload} />
+        </div>
       ) : (
-        <div className="flex gap-4">
-          <RRWebPlayer jsonData={jsonData} onTimeUpdate={handleTimeUpdate} />
-          <XHREventsTable
-            xhrEvents={jsonData.xhrEvents}
-            currentTime={currentTime}
-            startTimestamp={startTimestamp}
-          />
+        <div className="flex-grow">
+          <DevToolsUI jsonData={jsonData} currentTime={currentTime} onTimeUpdate={handleTimeUpdate} startTimestamp={startTimestamp} />
         </div>
       )}
     </main>
