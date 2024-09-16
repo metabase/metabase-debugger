@@ -24,9 +24,9 @@ export default function DevToolsUI({ jsonData, currentTime, onTimeUpdate, startT
       </div>
 
       {/* DevTools */}
-      <div className="w-full lg:w-2/5 p-4 overflow-auto h-[calc(100vh-8rem)] lg:h-[calc(100vh-2rem)]">
+      <div className="w-full lg:w-2/5 p-4 overflow-auto">
         <h2 className="text-2xl font-bold mb-4">DevTools</h2>
-        <Tabs defaultValue="network" className="w-full h-full">
+        <Tabs defaultValue="network" className="w-full">
           <TabsList>
             <TabsTrigger value="network">Network</TabsTrigger>
             <TabsTrigger value="console">Console</TabsTrigger>

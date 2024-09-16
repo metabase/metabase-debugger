@@ -26,11 +26,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <h1 className="text-4xl font-semibold flex items-center">
+      <h1 className="text-xl font-semibold flex items-center">
         <Image
           src="/metabase.webp"
           alt="Metabase Logo"
-          width={280}
+          width={150}
           height={40}
         />
         Debugger

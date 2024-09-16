@@ -75,3 +75,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rr-player {
+  box-shadow: none !important;
+  @apply border border-gray-200 rounded-sm
+}
+
+.rr-controller {
+  @apply bg-transparent !important;
+}
