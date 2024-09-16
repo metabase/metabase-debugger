@@ -9,24 +9,34 @@ import {
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import XHREventDetails from './XHREventDetails';
-
-interface XHREvent {
-  request: {
-    timestamp: number;
-    method: string;
-    url: string;
-  };
-  response: {
-    status: number;
-    responseText: string;
-  };
-}
+import { XHREvent } from '@/types/XHREvent';
 
 interface XHREventsTableProps {
   xhrEvents: XHREvent[];
   currentTime: number;
   startTimestamp: number;
 }
+
+const getStatusDotColor = (status: number) => {
+  if (status >= 200 && status < 300) return 'bg-green-500';
+  if (status >= 300 && status < 400) return 'bg-yellow-500';
+  return 'bg-red-500';
+};
+
+const getRowStyle = (index: number, currentEventIndex: number, status: number) => {
+  let baseStyle = '';
+  if (index === currentEventIndex) {
+    baseStyle = 'bg-accent/20';
+  }
+
+  if (status >= 300 && status < 400) {
+    return `${baseStyle} bg-yellow-100/50 dark:bg-yellow-900/20`;
+  } else if (status >= 400) {
+    return `${baseStyle} bg-red-100/50 dark:bg-red-900/20 text-red-600 dark:text-red-400`;
+  }
+
+  return baseStyle;
+};
 
 const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime, startTimestamp }) => {
   const [selectedEvent, setSelectedEvent] = useState<XHREvent | null>(null);
@@ -40,10 +50,6 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
   const currentEventIndex = useMemo(() => {
     return sortedEvents.findIndex(event => event.request.timestamp > currentTime) - 1;
   }, [sortedEvents, currentTime, startTimestamp]);
-
-  const getRowStyle = (index: number) => {
-    return index === currentEventIndex ? 'bg-accent/20' : '';
-  };
 
   const handleRowClick = (event: XHREvent) => {
     setSelectedEvent(event);
@@ -65,7 +71,7 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
             {sortedEvents.map((event, index) => (
               <TableRow 
                 key={index} 
-                className={`${getRowStyle(index)} cursor-pointer hover:bg-muted/50`}
+                className={`${getRowStyle(index, currentEventIndex, event.response.status)} cursor-pointer hover:bg-muted/50`}
                 onClick={() => handleRowClick(event)}
               >
                 <TableCell>{event.request.method}</TableCell>
@@ -74,7 +80,10 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
                     ? `${event.request.url.substring(0, 57)}...`
                     : event.request.url}
                 </TableCell>
-                <TableCell>{event.response.status}</TableCell>
+                <TableCell className="flex items-center">
+                  <div className={`w-2 h-2 rounded-full mr-2 ${getStatusDotColor(event.response.status)}`}></div>
+                  {event.response.status}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
