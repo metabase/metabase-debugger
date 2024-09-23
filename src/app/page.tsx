@@ -1,19 +1,16 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useState, useMemo, Suspense } from 'react'
 import UploadDropzone from '@/components/UploadDropzone'
 import DevToolsUI from '@/components/DevToolsUi'
 import Image from 'next/image'
+import FileLoader from '@/components/FileLoader'
 
 export default function Home() {
   const [jsonData, setJsonData] = useState<{ rrwebEvents: any[], xhrEvents: any[] } | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const searchParams = useSearchParams()
-  const fileId = searchParams?.get('fileId')
 
   const startTimestamp = useMemo(() => {
     if (jsonData && jsonData.rrwebEvents.length > 0) {
@@ -30,28 +27,6 @@ export default function Home() {
     setCurrentTime(time);
   }
 
-  useEffect(() => {
-    if (fileId) {
-      setIsLoading(true);
-      setError(null);
-      fetch(`/api/fetchSlackFile?fileId=${fileId}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            throw new Error(data.error);
-          }
-          setJsonData(data);
-        })
-        .catch(err => {
-          console.error('Error fetching Slack file:', err);
-          setError('Failed to fetch file from Slack. Please check the fileId and try again.');
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [fileId]);
-
   return (
     <main className="min-h-screen flex flex-col">
       <div className="flex justify-between items-center p-4">
@@ -65,6 +40,13 @@ export default function Home() {
           Debugger
         </h1>
       </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <FileLoader
+          onFileLoad={handleFileUpload}
+          onError={setError}
+          onLoading={setIsLoading}
+        />
+      </Suspense>
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center">
           <p>Loading file from Slack...</p>
