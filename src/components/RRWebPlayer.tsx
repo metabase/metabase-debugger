@@ -46,7 +46,7 @@ const RRWebPlayer: React.FC<RRWebPlayerProps> = ({ jsonData, onTimeUpdate }) => 
         props: {
           events: jsonData.rrwebEvents,
           width: dimensions.width,
-          height: dimensions.height,
+          height: dimensions.height
         },
       });
 
