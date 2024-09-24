@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RRWebPlayer from './RRWebPlayer'
 import XHREventsTable from './XHREventsTable'
+import ConsoleOutput from './ConsoleOutput'
 
 interface DevToolsUIProps {
   jsonData: {
@@ -39,8 +40,11 @@ export default function DevToolsUI({ jsonData, currentTime, onTimeUpdate, startT
               startTimestamp={startTimestamp}
             />
           </TabsContent>
-          <TabsContent value="console">
-            Coming soon
+          <TabsContent value="console" className="h-[calc(100%-3rem)]">
+            <ConsoleOutput
+              jsonData={jsonData}
+              startTimestamp={startTimestamp}
+            />
           </TabsContent>
           <TabsContent value="metadata">
             Coming soon
