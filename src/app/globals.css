@@ -34,6 +34,8 @@
     --ring: 222.2 84% 4.9%;
  
     --radius: 0.5rem;
+
+    --player-primary: #519EE3;
   }
  
   .dark {
@@ -64,6 +66,8 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    --player-primary: #519EE3;
   }
 }
  
@@ -83,4 +87,22 @@
 
 .rr-controller {
   @apply bg-transparent !important;
+}
+
+.rr-controller .active, .rr-progress__handler  {
+  background: var(--player-primary) !important;
+}
+
+.rr-progress__step {
+  background: var(--player-primary) !important;
+  opacity: 0.2 !important;
+}
+
+.switch input[type='checkbox']:checked+label:before {
+  background: var(--player-primary) !important;
+}
+
+.switch input[type='checkbox']+label:before {
+  background: var(--player-primary) !important;
+  opacity: 0.4 !important;
 }

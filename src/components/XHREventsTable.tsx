@@ -43,12 +43,12 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const sortedEvents = useMemo(() => 
-    [...xhrEvents].sort((a, b) => a.request.timestamp - b.request.timestamp),
+    [...xhrEvents].sort((a, b) => a.timestamp - b.timestamp),
     [xhrEvents]
   );
 
   const currentEventIndex = useMemo(() => {
-    return sortedEvents.findIndex(event => event.request.timestamp > currentTime) - 1;
+    return sortedEvents.findIndex(event => event.timestamp > currentTime) - 1;
   }, [sortedEvents, currentTime, startTimestamp]);
 
   const handleRowClick = (event: XHREvent) => {
@@ -71,18 +71,18 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
             {sortedEvents.map((event, index) => (
               <TableRow 
                 key={index} 
-                className={`${getRowStyle(index, currentEventIndex, event.response.status)} cursor-pointer hover:bg-muted/50`}
+                className={`${getRowStyle(index, currentEventIndex, event.data.responseStatus)} cursor-pointer hover:bg-muted/50`}
                 onClick={() => handleRowClick(event)}
               >
-                <TableCell>{event.request.method}</TableCell>
+                <TableCell>{event.data.method}</TableCell>
                 <TableCell className="font-mono">
-                  {event.request.url.length > 60
-                    ? `${event.request.url.substring(0, 57)}...`
-                    : event.request.url}
+                  {event.data.url.length > 60
+                    ? `${event.data.url.substring(0, 57)}...`
+                    : event.data.url}
                 </TableCell>
                 <TableCell className="flex items-center">
-                  <div className={`w-2 h-2 rounded-full mr-2 ${getStatusDotColor(event.response.status)}`}></div>
-                  {event.response.status}
+                  <div className={`w-2 h-2 rounded-full mr-2 ${getStatusDotColor(event.data.responseStatus)}`}></div>
+                  {event.data.responseStatus}
                 </TableCell>
               </TableRow>
             ))}
