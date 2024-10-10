@@ -1,12 +1,16 @@
 export interface XHREvent {
-  request: {
-    timestamp: number;
+  timestamp: number;
+  data: {
     method: string;
     url: string;
-    data: string;
-  };
-  response: {
-    status: number;
-    responseText: string;
+    requestHeaders: {
+      [key: string]: string;
+    };
+    requestBody: string;
+    responseHeaders: {
+      [key: string]: string;
+    };
+    responseBody: string;
+    responseStatus: number;
   };
 }
