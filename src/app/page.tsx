@@ -1,18 +1,21 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import UploadDropzone from '@/components/UploadDropzone'
 import DevToolsUI from '@/components/DevToolsUi'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   const [jsonData, setJsonData] = useState<{ rrwebEvents: any[], xhrEvents: any[] } | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const searchParams = useSearchParams()
-  const fileId = searchParams?.get('fileId')
+
+  const fileId = searchParams.fileId as string | undefined
 
   const startTimestamp = useMemo(() => {
     if (jsonData && jsonData.rrwebEvents.length > 0) {
@@ -29,7 +32,7 @@ export default function Home() {
     setCurrentTime(time);
   }
 
-  useEffect(() => {
+  useMemo(() => {
     if (fileId) {
       setIsLoading(true);
       setError(null);
