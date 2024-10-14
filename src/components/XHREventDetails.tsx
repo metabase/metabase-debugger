@@ -57,37 +57,39 @@ const XHREventDetails: React.FC<XHREventDetailsProps> = ({ event, isOpen, onOpen
              <TableBody>
                 <TableRow>
                   <TableCell>Method</TableCell>
-                  <TableCell>{event.request.method}</TableCell>
+                  <TableCell>{event.data.method}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>URL</TableCell>
-                  <TableCell className="font-mono break-all">{event.request.url}</TableCell>
+                  <TableCell className="font-mono break-all">{event.data.url}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>Status</TableCell>
-                  <TableCell>{event.response.status}</TableCell>
+                  <TableCell>{event.data.responseStatus}</TableCell>
                 </TableRow>
                 <TableRow>
                 <TableCell>Timestamp</TableCell>
-                <TableCell>{new Date(event.request.timestamp).toISOString()}</TableCell>
+                <TableCell>{new Date(event.timestamp).toISOString()}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
-          {event.request.data && (
+          {event.data.requestBody && (
             <>
               <SheetTitle className='mt-4'>Request</SheetTitle>
               <Table>         
                 <TableRow>
-                  <TableCell colSpan={2}>{renderBody(event.request.data)}</TableCell>
+                  <TableCell colSpan={2}>{renderBody(event.data.requestBody)}</TableCell>
                 </TableRow>
               </Table>
             </>
           )}
-          <SheetTitle className='mt-4'>Response</SheetTitle>
+          {event.data.responseBody && (
+            <SheetTitle className='mt-4'>Response</SheetTitle>
+          )}
           <Table>
             <TableBody>
               <TableRow>
-                <TableCell>{renderBody(event.response.responseText)}</TableCell>
+                <TableCell>{renderBody(event.data.responseBody)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
