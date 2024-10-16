@@ -10,6 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import XHREventDetails from './XHREventDetails';
 import { XHREvent } from '@/types/XHREvent';
+import { Input } from "@/components/ui/input";
 
 interface XHREventsTableProps {
   xhrEvents: XHREvent[];
@@ -41,10 +42,20 @@ const getRowStyle = (index: number, currentEventIndex: number, status: number) =
 const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime, startTimestamp }) => {
   const [selectedEvent, setSelectedEvent] = useState<XHREvent | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredEvents = useMemo(() => 
+    xhrEvents.filter(event => 
+      event.data.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.data.method.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.data.responseStatus.toString().includes(searchQuery)
+    ),
+    [xhrEvents, searchQuery]
+  );
 
   const sortedEvents = useMemo(() => 
-    [...xhrEvents].sort((a, b) => a.timestamp - b.timestamp),
-    [xhrEvents]
+    [...filteredEvents].sort((a, b) => a.timestamp - b.timestamp),
+    [filteredEvents]
   );
 
   const currentEventIndex = useMemo(() => {
@@ -58,7 +69,14 @@ const XHREventsTable: React.FC<XHREventsTableProps> = ({ xhrEvents, currentTime,
 
   return (
     <>
-      <ScrollArea className="h-[calc(100vh-200px)] w-full rounded-md border">
+      <Input
+        type="text"
+        placeholder="Search network requests..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="mb-4"
+      />
+      <ScrollArea className="h-[calc(100vh-240px)] w-full rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>

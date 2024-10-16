@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
 interface ConsoleEvent {
   type: number;
@@ -84,6 +85,8 @@ const formatConsoleMessage = (payload: any[]) => {
 };
 
 const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ jsonData, startTimestamp }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const consoleEvents = useMemo(() => {
     return jsonData.rrwebEvents
       .filter((event: ConsoleEvent) => event.type === 6)
@@ -94,24 +97,40 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ jsonData, startTimestamp 
       }));
   }, [jsonData, startTimestamp]);
 
+  const filteredEvents = useMemo(() => 
+    consoleEvents.filter(event => 
+      JSON.stringify(event.data.payload).toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+    [consoleEvents, searchQuery]
+  );
+
   return (
-    <ScrollArea className="h-[calc(100vh-200px)] w-full rounded-md border">
-      {consoleEvents.map((event) => (
-        <div key={event.id} className={`p-2 border-b ${getLevelStyle(event.data.payload.level)}`}>
-          <div className="flex items-center mb-1">
-            <span className="text-xs font-semibold mr-2">
-              {event.relativeTime.toFixed(2)}s
-            </span>
-            <span className="text-xs font-bold uppercase">
-              {event.data.payload.level}
-            </span>
+    <>
+      <Input
+        type="text"
+        placeholder="Search console output..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="mb-4"
+      />
+      <ScrollArea className="h-[calc(100vh-240px)] w-full rounded-md border">
+        {filteredEvents.map((event) => (
+          <div key={event.id} className={`p-2 border-b ${getLevelStyle(event.data.payload.level)}`}>
+            <div className="flex items-center mb-1">
+              <span className="text-xs font-semibold mr-2">
+                {event.relativeTime.toFixed(2)}s
+              </span>
+              <span className="text-xs font-bold uppercase">
+                {event.data.payload.level}
+              </span>
+            </div>
+            <div className="font-mono text-sm">
+              {formatConsoleMessage(event.data.payload.payload)}
+            </div>
           </div>
-          <div className="font-mono text-sm">
-            {formatConsoleMessage(event.data.payload.payload)}
-          </div>
-        </div>
-      ))}
-    </ScrollArea>
+        ))}
+      </ScrollArea>
+    </>
   );
 };
 
