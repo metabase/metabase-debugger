@@ -10,7 +10,7 @@ export default function Home({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const [jsonData, setJsonData] = useState<{ rrwebEvents: any[], xhrEvents: any[] } | null>(null)
+  const [jsonData, setJsonData] = useState<{ rrwebEvents: any[], xhrEvents: any[], metadata?: Record<string, any>, logs?: any[], userLogs?: any[], backendErrors?: any[], basicInfo?: { currentUrl: string, id: number, name: string } } | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -24,8 +24,12 @@ export default function Home({
     return 0;
   }, [jsonData]);
 
-  const handleFileUpload = (data: { rrwebEvents: any[], xhrEvents: any[] }) => {
-    setJsonData(data)
+  const handleFileUpload = (data: { rrwebEvents: any[], xhrEvents: any[], metadata: Record<string, any>, logs: any[], userLogs: any[], backendErrors: any[] }) => {
+    if (data.rrwebEvents && data.xhrEvents && data.metadata) {
+      setJsonData(data);
+    } else {
+      throw new Error('Invalid file structure: missing required data');
+    }
   }
 
   const handleTimeUpdate = (time: number) => {
@@ -42,10 +46,10 @@ export default function Home({
           if (data.error) {
             throw new Error(data.error);
           }
-          if (data.rrwebEvents && data.xhrEvents) {
+          if (data.rrwebEvents && data.xhrEvents && data.metadata) {
             setJsonData(data);
           } else {
-            throw new Error('Invalid file structure: missing rrwebEvents or xhrEvents');
+            throw new Error('Invalid file structure: missing rrwebEvents, xhrEvents, or metadata');
           }
         })
         .catch(err => {
