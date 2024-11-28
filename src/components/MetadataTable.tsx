@@ -1,9 +1,17 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import React from 'react'
+
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 interface MetadataTableProps {
-  metadata: Record<string, any>;
+  metadata: Record<string, any>
 }
 
 const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
@@ -15,7 +23,7 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
             <li key={index}>{renderValue(item)}</li>
           ))}
         </ul>
-      );
+      )
     } else if (typeof value === 'object' && value !== null) {
       return (
         <Table>
@@ -28,14 +36,13 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
             ))}
           </TableBody>
         </Table>
-      );
+      )
     }
-    return typeof value === 'string' ? value : JSON.stringify(value);
-  };
+    return typeof value === 'string' ? value : JSON.stringify(value)
+  }
 
-  const renderTable = (data: Record<string, any>, title: string) => (
+  const renderTable = (data: Record<string, any>) => (
     <div className="mb-8">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <Table>
         <TableHeader>
           <TableRow>
@@ -53,14 +60,15 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
         </TableBody>
       </Table>
     </div>
-  );
+  )
 
   return (
     <ScrollArea className="h-[calc(100vh-12rem)] w-full">
-      {metadata['metabase-info'] && renderTable(metadata['metabase-info'], 'Metabase Info')}
-      {metadata['system-info'] && renderTable(metadata['system-info'], 'System Info')}
+      {metadata.bugReportDetails && renderTable(metadata.bugReportDetails)}
+      {metadata['metabase-info'] && renderTable(metadata['metabase-info'])}
+      {metadata['system-info'] && renderTable(metadata['system-info'])}
     </ScrollArea>
-  );
-};
+  )
+}
 
-export default MetadataTable;
+export default MetadataTable

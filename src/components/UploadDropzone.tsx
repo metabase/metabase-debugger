@@ -1,54 +1,70 @@
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+import { DiagnosticData } from '@/types/DiagnosticData'
+
 interface UploadDropzoneProps {
-  onFileUpload: (data: { rrwebEvents: any[]; xhrEvents: any[]; metadata: Record<string, any>; logs: any[]; userLogs: any[]; backendErrors: any[], basicInfo: { currentUrl: string, id: number, name: string } }) => void;
+  onFileUpload: (data: DiagnosticData) => void
 }
 
 const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]
-    const reader = new FileReader()
-  
-    reader.onload = (event: ProgressEvent<FileReader>) => {
-      try {
-        const result = event.target?.result;
-        if (typeof result === 'string') {
-          const parsedData = JSON.parse(result);
-          if (parsedData.rrwebEvents && Array.isArray(parsedData.rrwebEvents) &&
-              parsedData.xhrEvents && Array.isArray(parsedData.xhrEvents) &&
-              parsedData.metadata && typeof parsedData.metadata === 'object') {
-            onFileUpload({
-              rrwebEvents: parsedData.rrwebEvents,
-              xhrEvents: parsedData.xhrEvents,
-              metadata: parsedData.metadata,
-              logs: parsedData.logs || [],
-              userLogs: parsedData.userLogs || [],
-              backendErrors: parsedData.backendErrors || [],
-              basicInfo: parsedData.basicInfo || {}
-            });
-          } else {
-            throw new Error('Invalid JSON structure: missing or invalid required data');
-          }
-        }
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-        alert('Invalid JSON file. Please upload a valid JSON file with rrwebEvents, xhrEvents, and metadata.');
-      }
-    }
-  
-    reader.readAsText(file)
-  }, [onFileUpload])
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0]
+      const reader = new FileReader()
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'application/json': ['.json'] } })
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        try {
+          const result = event.target?.result
+          if (typeof result === 'string') {
+            const parsedData = JSON.parse(result)
+
+            const diagnosticData: DiagnosticData = {
+              url: parsedData.url || window.location.href,
+              entityInfo: {
+                ...parsedData.entityInfo,
+                bugReportDetails: parsedData.bugReportDetails,
+              },
+              frontendErrors: Array.isArray(parsedData.frontendErrors)
+                ? parsedData.frontendErrors
+                : [],
+              backendErrors: Array.isArray(parsedData.backendErrors)
+                ? parsedData.backendErrors
+                : [],
+              userLogs: Array.isArray(parsedData.userLogs) ? parsedData.userLogs : [],
+              logs: Array.isArray(parsedData.logs) ? parsedData.logs : [],
+              description: parsedData.description || 'No description provided',
+            }
+
+            onFileUpload(diagnosticData)
+          }
+        } catch (error) {
+          console.error('Error parsing diagnostic info:', error)
+          alert('Invalid file format. Please upload a valid Metabase diagnostic info file.')
+        }
+      }
+
+      reader.readAsText(file)
+    },
+    [onFileUpload]
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/json': ['.json'] },
+    maxFiles: 1,
+  })
 
   return (
-    <div {...getRootProps()} className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-gray-400 transition-colors">
+    <div
+      {...getRootProps()}
+      className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
+    >
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p>Drop the JSON file here...</p>
+        <p>Drop the Metabase diagnostic info file here...</p>
       ) : (
-        <p>Drag and drop a JSON file here, or click to select a file</p>
+        <p>Drag and drop a Metabase diagnostic info file here, or click to select a file</p>
       )}
     </div>
   )

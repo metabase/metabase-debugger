@@ -1,91 +1,81 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import RRWebPlayer from './RRWebPlayer'
-import XHREventsTable from './XHREventsTable'
-import ConsoleOutput from './ConsoleOutput'
+import { useState } from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DiagnosticData } from '@/types/DiagnosticData'
+
+import { ConsoleOutput } from './ConsoleOutput'
+import LogsTable from './LogsTable'
 import MetadataTable from './MetadataTable'
-import LogsTable from "./LogsTable"
-import { Badge } from "@/components/ui/badge"
+import { RawContent } from './RawContent'
 
 interface DevToolsUIProps {
-  jsonData: {
-    rrwebEvents: any[];
-    xhrEvents: any[];
-    metadata?: Record<string, any>;
-    logs?: any[];
-    userLogs?: any[];
-    backendErrors?: any[];
-    basicInfo?: {
-      currentUrl: string;
-      id: number;
-      name: string;
-    };
-  };
-  currentTime: number;
-  onTimeUpdate: (time: number) => void;
-  startTimestamp: number;
+  diagnosticData: DiagnosticData
 }
 
-export default function DevToolsUI({ jsonData, currentTime, onTimeUpdate, startTimestamp }: DevToolsUIProps) {
-  return (
-    <div className="flex flex-col lg:flex-row h-screen bg-background text-foreground">
-      {/* Session Player */}
-      <div className="w-full lg:w-3/5 p-4 border-b lg:border-b-0 lg:border-r">
-        <h2 className="text-2xl font-bold mb-4">Session Player</h2>
-        {jsonData.basicInfo && (
-          <div className="mb-4 p-4 bg-muted rounded-md">
-            <p><strong>Name:</strong> {jsonData.basicInfo.name}</p>
-            <p><strong>ID:</strong> {jsonData.basicInfo.id}</p>
-            <p><strong>Current URL:</strong> {jsonData.basicInfo.currentUrl}</p>
-          </div>
-        )}
-        <div className="h-[calc(100vh-12rem)] lg:h-[calc(100vh-6rem)]">
-          <RRWebPlayer jsonData={jsonData} onTimeUpdate={onTimeUpdate} />
-        </div>
-      </div>
+export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
+  const [frontendErrorCount, setFrontendErrorCount] = useState(0)
 
-      {/* DevTools */}
-      <div className="w-full lg:w-2/5 p-4 overflow-auto relative">
-        <h2 className="text-2xl font-bold mb-4">DevTools</h2>
-        <Tabs defaultValue="network" className="w-full">
-          <TabsList className="tabs-list">
-            <TabsTrigger value="network">Network</TabsTrigger>
-            <TabsTrigger value="console">Console</TabsTrigger>
-            <TabsTrigger value="metadata">Metadata</TabsTrigger>
-            <TabsTrigger value="logs">Logs</TabsTrigger>
-            <TabsTrigger value="userLogs">User Logs</TabsTrigger>
-            <TabsTrigger value="backendErrors" className="tabs-trigger relative">
-              Backend Errors
-              {jsonData.backendErrors && jsonData.backendErrors.length > 0 && (
-                <Badge variant="destructive" className="ml-2 absolute -top-2 -right-2">
-                  {jsonData.backendErrors.length}
-                </Badge>
-              )}
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="network" className="h-[calc(100%-3rem)]">
-            <XHREventsTable
-              xhrEvents={jsonData.xhrEvents}
-              currentTime={currentTime}
-              startTimestamp={startTimestamp}
-            />
+  const jsonString = JSON.stringify(diagnosticData, null, 2)
+
+  return (
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <div className="w-full p-4 overflow-auto relative">
+        <Tabs defaultValue="frontendErrors" className="w-full">
+          <div className="sticky top-0 left-0 w-full bg-background z-10">
+            <TabsList className="tabs-list mb-4">
+              <TabsTrigger value="basicInfo">Basic Info</TabsTrigger>
+              <TabsTrigger value="entityInfo">Entity Info</TabsTrigger>
+              <TabsTrigger value="frontendErrors" className="tabs-trigger relative">
+                Frontend Errors
+                {frontendErrorCount > 0 && (
+                  <Badge variant="destructive" className="ml-2 absolute -top-2 -right-2 z-10">
+                    {frontendErrorCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="backendErrors" className="tabs-trigger relative">
+                Backend Errors
+                {diagnosticData.backendErrors.length > 0 && (
+                  <Badge variant="destructive" className="ml-2 absolute -top-2 -right-2">
+                    {diagnosticData.backendErrors.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="userLogs">User Logs</TabsTrigger>
+              <TabsTrigger value="logs">System Logs</TabsTrigger>
+              <TabsTrigger value="raw">Raw Data</TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="basicInfo" className="h-[calc(100%-3rem)]">
+            <p>
+              <strong>URL:</strong> {diagnosticData.url}
+            </p>
+            <p>
+              <strong>Description:</strong> {diagnosticData.description}
+            </p>
           </TabsContent>
-          <TabsContent value="console" className="h-[calc(100%-3rem)]">
+          <TabsContent value="entityInfo" className="h-[calc(100%-3rem)]">
+            <MetadataTable metadata={diagnosticData.entityInfo} />
+          </TabsContent>
+          <TabsContent value="frontendErrors" className="h-[calc(100%-3rem)]">
             <ConsoleOutput
-              jsonData={jsonData}
-              startTimestamp={startTimestamp}
+              errors={diagnosticData.frontendErrors}
+              onErrorCountChange={setFrontendErrorCount}
             />
-          </TabsContent>
-          <TabsContent value="metadata" className="h-[calc(100%-3rem)]">
-            <MetadataTable metadata={jsonData?.metadata || {}} />
-          </TabsContent>
-          <TabsContent value="logs" className="h-[calc(100%-3rem)]">
-            <LogsTable logs={jsonData.logs || []} title="Logs"/>
-          </TabsContent>
-          <TabsContent value="userLogs" className="h-[calc(100%-3rem)]">
-            <LogsTable logs={jsonData.userLogs || []} title="User Logs" />
           </TabsContent>
           <TabsContent value="backendErrors" className="h-[calc(100%-3rem)]">
-            <LogsTable logs={jsonData.backendErrors || []} title="Backend Errors" />
+            <LogsTable logs={diagnosticData.backendErrors} title="Backend Errors" />
+          </TabsContent>
+          <TabsContent value="userLogs" className="h-[calc(100%-3rem)]">
+            <LogsTable logs={diagnosticData.userLogs} title="User Logs" />
+          </TabsContent>
+          <TabsContent value="logs" className="h-[calc(100%-3rem)]">
+            <LogsTable logs={diagnosticData.logs} title="System Logs" />
+          </TabsContent>
+          <TabsContent value="raw" className="h-[calc(100%-3rem)]">
+            <RawContent content={jsonString} />
           </TabsContent>
         </Tabs>
       </div>
