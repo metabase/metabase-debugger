@@ -10,4 +10,5 @@ export interface DiagnosticData {
   userLogs: any[]
   logs: any[]
   description: string
+  browserInfo?: Record<string, any>
 }

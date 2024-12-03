@@ -21,7 +21,7 @@ export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="w-full p-4 overflow-auto relative">
-        <Tabs defaultValue="frontendErrors" className="w-full">
+        <Tabs defaultValue="basicInfo" className="w-full">
           <div className="sticky top-0 left-0 w-full bg-background z-10">
             <TabsList className="tabs-list mb-4">
               <TabsTrigger value="basicInfo">Basic Info</TabsTrigger>
@@ -49,12 +49,30 @@ export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
           </div>
 
           <TabsContent value="basicInfo" className="h-[calc(100%-3rem)]">
-            <p>
-              <strong>URL:</strong> {diagnosticData.url}
-            </p>
-            <p>
-              <strong>Description:</strong> {diagnosticData.description}
-            </p>
+            <div className="space-y-2">
+              <p>
+                <strong>URL:</strong> {diagnosticData.url}
+              </p>
+              <p>
+                <strong>Description:</strong> {diagnosticData.description}
+              </p>
+              {diagnosticData.browserInfo && (
+                <>
+                  <p>
+                    <strong>Browser:</strong> {diagnosticData.browserInfo.browserName} {diagnosticData.browserInfo.browserVersion}
+                  </p>
+                  <p>
+                    <strong>OS:</strong> {diagnosticData.browserInfo.os} {diagnosticData.browserInfo.osVersion}
+                  </p>
+                  <p>
+                    <strong>Platform:</strong> {diagnosticData.browserInfo.platform}
+                  </p>
+                  <p>
+                    <strong>Language:</strong> {diagnosticData.browserInfo.language}
+                  </p>
+                </>
+              )}
+            </div>
           </TabsContent>
           <TabsContent value="entityInfo" className="h-[calc(100%-3rem)]">
             <MetadataTable metadata={diagnosticData.entityInfo} />
