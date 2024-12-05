@@ -5,15 +5,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
 import { ConsoleOutput } from './ConsoleOutput'
-import LogsTable from './LogsTable'
-import MetadataTable from './MetadataTable'
+import { LogsTable } from './LogsTable'
+import { MetadataTable } from './MetadataTable'
 import { RawContent } from './RawContent'
 
 interface DevToolsUIProps {
   diagnosticData: DiagnosticData
 }
 
-export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
+export const DevToolsUI = ({ diagnosticData }: DevToolsUIProps) => {
   const [frontendErrorCount, setFrontendErrorCount] = useState(0)
 
   const jsonString = JSON.stringify(diagnosticData, null, 2)
@@ -27,7 +27,7 @@ export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
               <TabsTrigger value="basicInfo">Basic Info</TabsTrigger>
               <TabsTrigger value="entityInfo">Entity Info</TabsTrigger>
               <TabsTrigger value="frontendErrors" className="tabs-trigger relative">
-                Frontend Errors
+                Console output
                 {frontendErrorCount > 0 && (
                   <Badge variant="destructive" className="ml-2 absolute -top-2 -right-2 z-10">
                     {frontendErrorCount}
@@ -51,7 +51,7 @@ export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
           <TabsContent value="basicInfo" className="h-[calc(100%-3rem)]">
             <div className="space-y-2">
               <p>
-                <strong>URL:</strong> {diagnosticData.url}
+                <strong>URL:</strong> {diagnosticData.url || 'Unknown URL'}
               </p>
               <p>
                 <strong>Description:</strong> {diagnosticData.description}
@@ -59,16 +59,21 @@ export default function DevToolsUI({ diagnosticData }: DevToolsUIProps) {
               {diagnosticData.browserInfo && (
                 <>
                   <p>
-                    <strong>Browser:</strong> {diagnosticData.browserInfo.browserName} {diagnosticData.browserInfo.browserVersion}
+                    <strong>Browser:</strong>{' '}
+                    {diagnosticData.browserInfo.browserName || 'Unknown browser'}{' '}
+                    {diagnosticData.browserInfo.browserVersion || 'Unknown version'}
                   </p>
                   <p>
-                    <strong>OS:</strong> {diagnosticData.browserInfo.os} {diagnosticData.browserInfo.osVersion}
+                    <strong>OS:</strong> {diagnosticData.browserInfo.os || 'Unknown OS'}{' '}
+                    {diagnosticData.browserInfo.osVersion || 'Unknown version'}
                   </p>
                   <p>
-                    <strong>Platform:</strong> {diagnosticData.browserInfo.platform}
+                    <strong>Platform:</strong>{' '}
+                    {diagnosticData.browserInfo.platform || 'Unknown platform'}
                   </p>
                   <p>
-                    <strong>Language:</strong> {diagnosticData.browserInfo.language}
+                    <strong>Language:</strong>{' '}
+                    {diagnosticData.browserInfo.language || 'Unknown language'}
                   </p>
                 </>
               )}

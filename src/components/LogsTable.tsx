@@ -180,4 +180,4 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
   )
 }
 
-export default LogsTable
+export { LogsTable }

@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import { useState, useMemo } from 'react'
 
-import DevToolsUI from '@/components/DevToolsUi'
-import UploadDropzone from '@/components/UploadDropzone'
+import { DevToolsUI } from '@/components/DevToolsUi'
+import { UploadDropzone } from '@/components/UploadDropzone'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
 export default function Home({

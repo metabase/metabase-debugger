@@ -71,4 +71,4 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
   )
 }
 
-export default MetadataTable
+export { MetadataTable }
