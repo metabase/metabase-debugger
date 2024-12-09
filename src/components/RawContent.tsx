@@ -112,6 +112,7 @@ export function RawContent({ content }: RawContentProps) {
           ref={preRef}
           dangerouslySetInnerHTML={{ __html: highlightedText() }}
           className="p-4 text-sm font-mono"
+          role="presentation"
         />
       </ScrollArea>
     </div>

@@ -20,7 +20,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
             const parsedData = JSON.parse(result)
 
             const diagnosticData: DiagnosticData = {
-              url: parsedData.url || window.location.href,
+              url: parsedData.url || '',
               entityInfo: {
                 ...parsedData.entityInfo,
                 bugReportDetails: parsedData.bugReportDetails,
@@ -34,6 +34,7 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
               userLogs: Array.isArray(parsedData.userLogs) ? parsedData.userLogs : [],
               logs: Array.isArray(parsedData.logs) ? parsedData.logs : [],
               description: parsedData.description || 'No description provided',
+              browserInfo: parsedData.browserInfo || {},
             }
 
             onFileUpload(diagnosticData)
@@ -59,8 +60,9 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
     <div
       {...getRootProps()}
       className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-gray-400 transition-colors"
+      data-testid="upload-dropzone"
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} data-testid="upload-input" />
       {isDragActive ? (
         <p>Drop the Metabase diagnostic info file here...</p>
       ) : (
@@ -70,4 +72,4 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
   )
 }
 
-export default UploadDropzone
+export { UploadDropzone }
