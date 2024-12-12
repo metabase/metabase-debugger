@@ -8,6 +8,8 @@ import { render, screen } from '../test/test-utils'
 
 describe('DevToolsUI', () => {
   const sampleDiagnosticData: DiagnosticData = {
+    entityName: 'Test Entity',
+    bugReportDetails: {},
     url: 'https://test.com',
     description: 'Test description',
     browserInfo: {
@@ -91,6 +93,8 @@ describe('DevToolsUI', () => {
 
   it('handles empty diagnostic data', () => {
     const emptyData: DiagnosticData = {
+      entityName: '',
+      bugReportDetails: {},
       url: '',
       description: '',
       browserInfo: {},
