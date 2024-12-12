@@ -40,7 +40,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
       let jsonData = null
       let stack = ''
       let level = 'error'
-      
+
       try {
         // Try to parse as JSON first
         const parsedJson = JSON.parse(cleanError)
@@ -54,7 +54,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
             level,
             message,
             stack,
-            details: jsonData
+            details: jsonData,
           }
         }
       } catch (e) {
@@ -79,7 +79,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
         level: message.startsWith('Warning:') ? 'warn' : 'error',
         message,
         stack: message.split('\n').slice(1).join('\n'),
-        details: jsonData
+        details: jsonData,
       }
     })
 

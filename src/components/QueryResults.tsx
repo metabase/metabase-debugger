@@ -22,10 +22,10 @@ export function QueryResults({ data }: QueryResultsProps) {
   const rows = data.data.rows
   const rowsTruncated = data.data.rows_truncated
   const nativeQuery = data.data.native_form?.query
-  
+
   const columns = data?.data?.cols.map((col) => ({
     name: col.name,
-    display_name: col.display_name
+    display_name: col.display_name,
   }))
 
   return (
@@ -34,9 +34,7 @@ export function QueryResults({ data }: QueryResultsProps) {
       {nativeQuery && (
         <div className="mb-4">
           <pre className="p-4 bg-gray-100 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
-            <code className="language-sql">
-              {nativeQuery}
-            </code>
+            <code className="language-sql">{nativeQuery}</code>
           </pre>
         </div>
       )}
@@ -45,9 +43,7 @@ export function QueryResults({ data }: QueryResultsProps) {
           <TableHeader className="bg-gray-100 sticky top-0 z-10">
             <TableRow>
               {columns.map((col, index) => (
-                <TableHead key={index}>
-                  {col.display_name}
-                </TableHead>
+                <TableHead key={index}>{col.display_name}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -71,9 +67,7 @@ export function QueryResults({ data }: QueryResultsProps) {
         </Table>
       </ScrollArea>
       <div className="mt-2 text-sm text-gray-500">
-        {rowsTruncated ? 
-          `Showing ${rowsTruncated} rows (truncated)` : 
-          `Total rows: ${rows.length}`}
+        {rowsTruncated ? `Showing ${rowsTruncated} rows (truncated)` : `Total rows: ${rows.length}`}
       </div>
     </div>
   )

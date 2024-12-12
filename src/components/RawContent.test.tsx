@@ -24,5 +24,4 @@ describe('RawContent', () => {
     render(<RawContent content={sampleContent} />)
     expect(screen.getByText(/"first": "apple"/)).toBeInTheDocument()
   })
-
 })

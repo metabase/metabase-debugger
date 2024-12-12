@@ -11,9 +11,7 @@ export function RawContent({ content }: RawContentProps) {
         Press <kbd>{navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}</kbd>+<kbd>F</kbd> to search
       </div>
       <ScrollArea className="h-[calc(100%-3rem)] w-full rounded-md border">
-        <pre>
-          {content}
-        </pre>
+        <pre>{content}</pre>
       </ScrollArea>
     </div>
   )

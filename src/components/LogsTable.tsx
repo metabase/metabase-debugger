@@ -120,10 +120,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
           <TableBody>
             {sortedLogs.map((log, index) => (
               <React.Fragment key={index}>
-                <TableRow 
-                  className="cursor-pointer"
-                  onClick={() => toggleItem(index)}
-                >
+                <TableRow className="cursor-pointer" onClick={() => toggleItem(index)}>
                   <TableCell className="w-[40px] p-0">
                     <ChevronRight
                       className={`h-4 w-4 shrink-0 transition-transform duration-200 ${

@@ -33,7 +33,7 @@ describe('QueryResults', () => {
 
   it('renders table headers correctly', () => {
     render(<QueryResults data={sampleData} />)
-    
+
     expect(screen.getByText('ID')).toBeInTheDocument()
     expect(screen.getByText('Name')).toBeInTheDocument()
     expect(screen.getByText('Email')).toBeInTheDocument()
@@ -41,20 +41,20 @@ describe('QueryResults', () => {
 
   it('renders table data correctly', () => {
     render(<QueryResults data={sampleData} />)
-    
+
     expect(screen.getByText('John Doe')).toBeInTheDocument()
     expect(screen.getByText('jane@example.com')).toBeInTheDocument()
   })
 
   it('displays native query when available', () => {
     render(<QueryResults data={sampleData} />)
-    
+
     expect(screen.getByText('SELECT * FROM users LIMIT 2')).toBeInTheDocument()
   })
 
   it('shows truncated rows message', () => {
     render(<QueryResults data={sampleData} />)
-    
+
     expect(screen.getByText('Showing 2 rows (truncated)')).toBeInTheDocument()
   })
 
@@ -69,7 +69,7 @@ describe('QueryResults', () => {
         ],
       },
     }
-    
+
     render(<QueryResults data={dataWithNull} />)
     expect(screen.getByText('null')).toBeInTheDocument()
   })
@@ -85,7 +85,7 @@ describe('QueryResults', () => {
         ],
       },
     }
-    
+
     render(<QueryResults data={dataWithObject} />)
     expect(screen.getByText('{"firstName":"John","lastName":"Doe"}')).toBeInTheDocument()
   })
@@ -97,8 +97,8 @@ describe('QueryResults', () => {
         rows_truncated: undefined,
       },
     }
-    
+
     render(<QueryResults data={nonTruncatedData} />)
     expect(screen.getByText('Total rows: 2')).toBeInTheDocument()
   })
-}) 
+})

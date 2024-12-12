@@ -1,6 +1,15 @@
 import { describe, it, expect } from 'vitest'
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption, TableFooter } from './table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCaption,
+  TableFooter,
+} from './table'
 import { render } from '../../test/test-utils'
 
 describe('Table', () => {
