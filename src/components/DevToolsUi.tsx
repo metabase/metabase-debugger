@@ -7,6 +7,7 @@ import { DiagnosticData } from '@/types/DiagnosticData'
 import { ConsoleOutput } from './ConsoleOutput'
 import { LogsTable } from './LogsTable'
 import { MetadataTable } from './MetadataTable'
+import { QueryResults } from './QueryResults'
 import { RawContent } from './RawContent'
 
 interface DevToolsUIProps {
@@ -22,7 +23,7 @@ export const DevToolsUI = ({ diagnosticData }: DevToolsUIProps) => {
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="w-full p-4 overflow-auto relative">
         <Tabs defaultValue="basicInfo" className="w-full">
-          <div className="sticky top-0 left-0 w-full bg-background z-10">
+          <div className="w-full bg-background z-10">
             <TabsList className="tabs-list mb-4">
               <TabsTrigger value="basicInfo">Basic Info</TabsTrigger>
               <TabsTrigger value="entityInfo">Entity Info</TabsTrigger>
@@ -44,6 +45,7 @@ export const DevToolsUI = ({ diagnosticData }: DevToolsUIProps) => {
               </TabsTrigger>
               <TabsTrigger value="userLogs">User Logs</TabsTrigger>
               <TabsTrigger value="logs">System Logs</TabsTrigger>
+              <TabsTrigger value="queryResults">Query Results</TabsTrigger>
               <TabsTrigger value="raw">Raw Data</TabsTrigger>
             </TabsList>
           </div>
@@ -96,6 +98,9 @@ export const DevToolsUI = ({ diagnosticData }: DevToolsUIProps) => {
           </TabsContent>
           <TabsContent value="logs" className="h-[calc(100%-3rem)]">
             <LogsTable logs={diagnosticData.logs} title="System Logs" />
+          </TabsContent>
+          <TabsContent value="queryResults" className="h-[calc(100%-3rem)]">
+            <QueryResults data={diagnosticData.queryResults} />
           </TabsContent>
           <TabsContent value="raw" className="h-[calc(100%-3rem)]">
             <RawContent content={jsonString} />
