@@ -7,6 +7,8 @@ const sampleErrors = [
   '"[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts\\n  × Module not found: Error message 1"',
   '"Warning: Something went wrong\\nStack trace for warning"',
   '"[webpack-dev-server] Another error occurred\\nStack trace for error"',
+  '{"level": "info", "message": "Server started successfully", "stack": "Info stack trace"}',
+  '"Regular log message without specific level"',
 ]
 
 describe('ConsoleOutput', () => {
@@ -28,7 +30,7 @@ describe('ConsoleOutput', () => {
   it('filters errors based on search input', () => {
     render(<ConsoleOutput errors={sampleErrors} />)
 
-    const searchInput = screen.getByPlaceholderText('Search errors...')
+    const searchInput = screen.getByPlaceholderText('Search logs...')
     fireEvent.change(searchInput, { target: { value: 'message 1' } })
 
     expect(
@@ -71,8 +73,19 @@ describe('ConsoleOutput', () => {
 
   it('handles empty error list', () => {
     render(<ConsoleOutput errors={[]} />)
-    const searchInput = screen.getByPlaceholderText('Search errors...')
+    const searchInput = screen.getByPlaceholderText('Search logs...')
     expect(searchInput).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('expands info logs to show stack trace', () => {
+    render(<ConsoleOutput errors={[sampleErrors[3]]} />)
+
+    // Find and click the info message
+    const infoMessage = screen.getByText('Server started successfully')
+    fireEvent.click(infoMessage)
+
+    // Check if stack trace is visible
+    expect(screen.getByText('Info stack trace')).toBeInTheDocument()
   })
 })
