@@ -1,7 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import React, { useMemo, useState } from 'react'
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
@@ -120,32 +119,32 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
         <Table>
           <TableBody>
             {sortedLogs.map((log, index) => (
-              <Collapsible
-                key={index}
-                open={openItems.includes(index)}
-                onOpenChange={() => toggleItem(index)}
-              >
-                <CollapsibleTrigger asChild>
-                  <TableRow className="cursor-pointer">
-                    <TableCell className="w-[40px] p-0">
-                      <ChevronRight
-                        className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
-                          openItems.includes(index) ? 'rotate-90' : ''
-                        }`}
-                      />
-                    </TableCell>
-                    <TableCell className="w-[180px] block">
-                      {new Date(log.timestamp).toLocaleString()}
-                    </TableCell>
-                    <TableCell className={getLevelColor(log.level)}>{log.level}</TableCell>
-                    <TableCell className="font-mono max-w-[500px] truncate w-full">
-                      {stripAnsiCodes(log.msg)}
-                    </TableCell>
-                  </TableRow>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="w-full bg-gray-700 text-white CollapsibleContent">
-                  <TableRow>
-                    <TableCell colSpan={4}>
+              <React.Fragment key={index}>
+                <TableRow className="cursor-pointer" onClick={() => toggleItem(index)}>
+                  <TableCell className="w-[40px] p-0">
+                    <ChevronRight
+                      className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                        openItems.includes(index) ? 'rotate-90' : ''
+                      }`}
+                    />
+                  </TableCell>
+                  <TableCell className="w-[180px] block">
+                    {new Date(log.timestamp).toLocaleString()}
+                  </TableCell>
+                  <TableCell className={getLevelColor(log.level)}>{log.level}</TableCell>
+                  <TableCell className="font-mono max-w-[500px] truncate w-full">
+                    {stripAnsiCodes(log.msg)}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="bg-gray-700 text-white h-0">
+                  <TableCell colSpan={4} className="p-0">
+                    <div
+                      className={`transition-all duration-200 ease-in-out ${
+                        openItems.includes(index)
+                          ? 'opacity-100 max-h-[1000px]'
+                          : 'opacity-0 max-h-0 overflow-hidden'
+                      }`}
+                    >
                       <div className="p-4 space-y-4">
                         <p>
                           <strong>FQNS:</strong> {log.fqns}
@@ -159,7 +158,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                         {log.exception && (
                           <div>
                             <strong>Exception:</strong>
-                            <pre className="mt-2 p-2 bg-muted rounded-md whitespace-pre-wrap break-words">
+                            <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
                               {log.exception}
                             </pre>
                           </div>
@@ -168,10 +167,10 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                           <strong>Process UUID:</strong> {log.process_uuid}
                         </p>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                </CollapsibleContent>
-              </Collapsible>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>
@@ -180,4 +179,4 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
   )
 }
 
-export default LogsTable
+export { LogsTable }

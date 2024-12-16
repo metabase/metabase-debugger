@@ -36,24 +36,53 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
   const parsedErrors = useMemo(() => {
     const parsed = errors.map((error, index) => {
       const cleanError = error.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
-      const parts = cleanError.split('"').filter(Boolean)
-      const format = parts[0]
-      const args = parts.slice(1)
+      let message = cleanError
+      let jsonData = null
+      let stack = ''
+      let level = 'error'
 
-      let message = format
-      args.forEach((arg) => {
-        message = message.replace('%s', arg)
-      })
+      try {
+        // Try to parse as JSON first
+        const parsedJson = JSON.parse(cleanError)
+        if (parsedJson.level && parsedJson.message) {
+          jsonData = parsedJson
+          message = parsedJson.message
+          stack = parsedJson.stack || ''
+          level = parsedJson.level
+          return {
+            id: index,
+            level,
+            message,
+            stack,
+            details: jsonData,
+          }
+        }
+      } catch (e) {
+        // If JSON parsing fails, try the other formats
+        try {
+          const jsonMatch = cleanError.match(/(?:Error:|Warning:)({.*})/i)
+          if (jsonMatch && jsonMatch[1]) {
+            jsonData = JSON.parse(jsonMatch[1])
+            message = cleanError.split('{')[0].trim()
+            if (jsonData.status) message += ` Status: ${jsonData.status}`
+            if (jsonData.data) message += ` ${jsonData.data}`
+          }
+        } catch (innerE) {
+          // If all JSON parsing fails, fall back to original parsing logic
+          const parts = cleanError.split('"').filter(Boolean)
+          message = parts[0] || cleanError
+        }
+      }
 
       return {
         id: index,
         level: message.startsWith('Warning:') ? 'warn' : 'error',
-        message: message,
+        message,
         stack: message.split('\n').slice(1).join('\n'),
+        details: jsonData,
       }
     })
 
-    // Count actual errors and notify parent
     const errorCount = parsed.filter((error) => error.level === 'error').length
     onErrorCountChange?.(errorCount)
 
@@ -72,7 +101,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
     <>
       <Input
         type="text"
-        placeholder="Search errors..."
+        placeholder="Search logs..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4"
