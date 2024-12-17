@@ -1,5 +1,5 @@
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { DiagnosticData } from '@/types/DiagnosticData'
 
@@ -39,8 +39,44 @@ describe('DevToolsUI', () => {
     logs: [{ message: 'System Log 1', timestamp: '2024-01-01' }],
   }
 
+  beforeEach(() => {
+    // Mock window.open for GitHub issue creation
+    vi.spyOn(window, 'open').mockImplementation(() => null)
+    // Mock window.location
+    Object.defineProperty(window, 'location', {
+      value: { href: 'https://debugger.test.com' },
+      writable: true,
+    })
+  })
+
   it('renders without crashing', () => {
     expect(() => render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)).not.toThrow()
+  })
+
+  it('displays GitHub issue button', () => {
+    render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
+    expect(screen.getByText('Create GitHub Issue')).toBeInTheDocument()
+  })
+
+  it('creates GitHub issue with correct data', async () => {
+    const user = userEvent.setup()
+    render(<DevToolsUI diagnosticData={sampleDiagnosticData} slackFileId="TEST123" />)
+
+    await user.click(screen.getByText('Create GitHub Issue'))
+
+    expect(window.open).toHaveBeenCalledWith(
+      expect.stringContaining('https://github.com/metabase/metabase/issues/new'),
+      '_blank'
+    )
+
+    const openCall = vi.mocked(window.open).mock.calls[0][0] as string
+    const url = new URL(openCall)
+
+    expect(url.searchParams.get('title')).toBe('[Bug Report] Test Entity - https://test.com')
+    expect(url.searchParams.get('body')).toContain('Test description')
+    expect(url.searchParams.get('body')).toContain(
+      'https://metaboat.slack.com/files/U02T6V8MXN2/TEST123/diagnostic-info.json'
+    )
   })
 
   it('displays basic info correctly', () => {
