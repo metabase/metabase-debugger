@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
 import { ConsoleOutput } from './ConsoleOutput'
+import { CreateGithubIssue } from './CreateGithubIssue'
 import { LogsTable } from './LogsTable'
 import { MetadataTable } from './MetadataTable'
 import { QueryResults } from './QueryResults'
@@ -12,15 +13,17 @@ import { RawContent } from './RawContent'
 
 interface DevToolsUIProps {
   diagnosticData: DiagnosticData
+  slackFileId?: string
 }
 
-export const DevToolsUI = ({ diagnosticData }: DevToolsUIProps) => {
+export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => {
   const [frontendErrorCount, setFrontendErrorCount] = useState(0)
 
   const jsonString = JSON.stringify(diagnosticData, null, 2)
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
+      <CreateGithubIssue diagnosticData={diagnosticData} slackFileId={slackFileId} />
       <div className="w-full p-4 overflow-auto relative">
         <Tabs defaultValue="basicInfo" className="w-full">
           <div className="w-full bg-background z-10">

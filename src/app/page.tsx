@@ -77,7 +77,7 @@ export default function Home({
         </div>
       ) : (
         <div className="flex-grow">
-          <DevToolsUI diagnosticData={diagnosticData} />
+          <DevToolsUI diagnosticData={diagnosticData} slackFileId={fileId} />
         </div>
       )}
     </main>
