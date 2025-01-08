@@ -19,7 +19,7 @@ export default function Home({
   const fileId = searchParams.fileId as string | undefined
 
   const handleFileUpload = (data: DiagnosticData) => {
-    if (data.url && Array.isArray(data.frontendErrors) && Array.isArray(data.backendErrors)) {
+    if (data.basicInfo.url && Array.isArray(data.frontendErrors) && Array.isArray(data.backendErrors)) {
       setDiagnosticData(data)
     } else {
       throw new Error('Invalid file structure: missing required data')

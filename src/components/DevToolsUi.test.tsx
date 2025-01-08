@@ -8,22 +8,24 @@ import { render, screen } from '../test/test-utils'
 
 describe('DevToolsUI', () => {
   const sampleDiagnosticData: DiagnosticData = {
-    entityName: 'Test Entity',
-    bugReportDetails: {},
-    url: 'https://test.com',
-    description: 'Test description',
-    browserInfo: {
-      browserName: 'Chrome',
-      browserVersion: '100.0.0',
-      os: 'Windows',
-      osVersion: '10',
-      platform: 'Desktop',
-      language: 'en-US',
-    },
-    entityInfo: {
+    basicInfo: {
+      url: 'https://test.com',
+      description: 'Test description',
       bugReportDetails: {},
+      browserInfo: {
+        browserName: 'Chrome',
+        browserVersion: '100.0.0',
+        os: 'Windows',
+        osVersion: '10',
+        platform: 'Desktop',
+        language: 'en-US',
+      },
       'metabase-info': {},
       'system-info': {},
+    },
+    entityInfo: {
+      entityName: 'question',
+      name: "Test Question's Name",
     },
     frontendErrors: [
       '"[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts\\n  × Module not found: Error message 1"',
@@ -72,7 +74,7 @@ describe('DevToolsUI', () => {
     const openCall = vi.mocked(window.open).mock.calls[0][0] as string
     const url = new URL(openCall)
 
-    expect(url.searchParams.get('title')).toBe('[Bug Report] Test Entity - https://test.com')
+    expect(url.searchParams.get('title')).toBe('[Bug Report] question - https://test.com')
     expect(url.searchParams.get('body')).toContain('Test description')
     expect(url.searchParams.get('body')).toContain(
       'https://metaboat.slack.com/files/U02T6V8MXN2/TEST123/diagnostic-info.json'
@@ -83,16 +85,17 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Check URL and description
-    expect(screen.getByText('URL:')).toBeInTheDocument()
+    expect(screen.getByText('url')).toBeInTheDocument()
     expect(screen.getByText('https://test.com')).toBeInTheDocument()
-    expect(screen.getByText('Description:')).toBeInTheDocument()
+    expect(screen.getByText('description')).toBeInTheDocument()
     expect(screen.getByText('Test description')).toBeInTheDocument()
 
     // Check browser info
-    expect(screen.getByText('Browser:')).toBeInTheDocument()
-    expect(screen.getByText('Chrome 100.0.0')).toBeInTheDocument()
-    expect(screen.getByText('OS:')).toBeInTheDocument()
-    expect(screen.getByText('Windows 10')).toBeInTheDocument()
+    expect(screen.getByText('browserInfo')).toBeInTheDocument()
+    expect(screen.getByText('Chrome')).toBeInTheDocument()
+    expect(screen.getByText('100.0.0')).toBeInTheDocument()
+    expect(screen.getByText('os')).toBeInTheDocument()
+    expect(screen.getByText('Windows')).toBeInTheDocument()
   })
 
   it('switches tabs correctly', async () => {
@@ -129,12 +132,16 @@ describe('DevToolsUI', () => {
 
   it('handles empty diagnostic data', () => {
     const emptyData: DiagnosticData = {
-      entityName: '',
-      bugReportDetails: {},
-      url: '',
-      description: '',
-      browserInfo: {},
-      entityInfo: {},
+      basicInfo: {
+        url: '',
+        bugReportDetails: {},
+        description: '',
+        browserInfo: {},
+      },
+      entityInfo: {
+        entityName: '',
+        name: '',
+      },
       frontendErrors: [],
       backendErrors: [],
       userLogs: [],
@@ -144,8 +151,9 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={emptyData} />)
 
     // Should still render without errors
-    expect(screen.getByText('Unknown URL')).toBeInTheDocument()
-    expect(screen.queryByText('Unknown browser')).not.toBeInTheDocument()
+    expect(screen.getByText('url')).toBeInTheDocument()
+    expect(screen.getByText('browserInfo')).toBeInTheDocument()
+    expect(screen.getByText('description')).toBeInTheDocument()
   })
 
   it('updates frontend error count', async () => {

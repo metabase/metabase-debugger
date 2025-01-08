@@ -62,11 +62,13 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
     </div>
   )
 
+  if (!metadata || !Object.keys(metadata).length) {
+    return <p className="text-center">No data 🙁</p>
+  }
+
   return (
     <ScrollArea className="h-[calc(100vh-12rem)] w-full">
-      {metadata.bugReportDetails && renderTable(metadata.bugReportDetails)}
-      {metadata['metabase-info'] && renderTable(metadata['metabase-info'])}
-      {metadata['system-info'] && renderTable(metadata['system-info'])}
+      {renderTable(metadata)}
     </ScrollArea>
   )
 }

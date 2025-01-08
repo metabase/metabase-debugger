@@ -56,6 +56,7 @@ describe('MetadataTable', () => {
   it('handles empty metadata object', () => {
     render(<MetadataTable metadata={{}} />)
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    expect(screen.getByText('No data 🙁')).toBeInTheDocument()
   })
 
   it('renders nested objects correctly', () => {

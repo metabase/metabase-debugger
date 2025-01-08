@@ -1,13 +1,10 @@
 import { GithubIcon } from 'lucide-react'
 
-import { Button } from './ui/button'
+import type { DiagnosticData } from '@/types/DiagnosticData'
 
+import { Button } from './ui/button'
 interface CreateGithubIssueProps {
-  diagnosticData: {
-    url: string
-    description?: string
-    entityName: string
-  }
+  diagnosticData: DiagnosticData
   slackFileId?: string
 }
 
@@ -18,16 +15,16 @@ export function CreateGithubIssue({ diagnosticData, slackFileId }: CreateGithubI
       ? `https://metaboat.slack.com/files/U02T6V8MXN2/${slackFileId}/diagnostic-info.json`
       : null
 
-    const issueTitle = `[Bug Report] ${diagnosticData.entityName || 'Issue'} - ${
-      diagnosticData.url || 'No URL'
+    const issueTitle = `[Bug Report] ${diagnosticData.entityInfo.entityName || 'Issue'} - ${
+      diagnosticData.basicInfo.url || 'No URL'
     }`
 
     const issueBody = `
 ### Description
-${diagnosticData.description || 'No description provided'}
+${diagnosticData.basicInfo.description || 'No description provided'}
 
 ### Links
-- Original URL: ${diagnosticData.url || 'N/A'}
+- Original URL: ${diagnosticData.basicInfo.url || 'N/A'}
 ${slackFileUrl ? `- Slack File: ${slackFileUrl}` : ''}
 - Bug Report Debugger: ${debuggerUrl}
 `

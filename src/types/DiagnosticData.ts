@@ -1,18 +1,19 @@
 export interface DiagnosticData {
-  entityName: string
-  url: string
+  basicInfo: {
+    url: string
+    description?: string
+    bugReportDetails: Record<string, any>
+    browserInfo: Record<string, any>
+  },
   entityInfo: {
-    bugReportDetails?: Record<string, any>
-    'metabase-info'?: Record<string, any>
-    'system-info'?: Record<string, any>
-  }
+    entityName: string
+    name: string
+    [key: string]: any
+  },
   frontendErrors: any[]
   backendErrors: any[]
   userLogs: any[]
   logs: any[]
-  bugReportDetails: Record<string, any>
-  description: string
-  browserInfo: Record<string, any>
   queryResults?: {
     cached: boolean | null
     database_id: number

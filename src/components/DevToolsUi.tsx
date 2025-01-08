@@ -54,35 +54,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
           </div>
 
           <TabsContent value="basicInfo" className="h-[calc(100%-3rem)]">
-            <div className="space-y-2">
-              <p>
-                <strong>URL:</strong> {diagnosticData.url || 'Unknown URL'}
-              </p>
-              <p>
-                <strong>Description:</strong> {diagnosticData.description}
-              </p>
-              {diagnosticData.browserInfo && (
-                <>
-                  <p>
-                    <strong>Browser:</strong>{' '}
-                    {diagnosticData.browserInfo.browserName || 'Unknown browser'}{' '}
-                    {diagnosticData.browserInfo.browserVersion || 'Unknown version'}
-                  </p>
-                  <p>
-                    <strong>OS:</strong> {diagnosticData.browserInfo.os || 'Unknown OS'}{' '}
-                    {diagnosticData.browserInfo.osVersion || 'Unknown version'}
-                  </p>
-                  <p>
-                    <strong>Platform:</strong>{' '}
-                    {diagnosticData.browserInfo.platform || 'Unknown platform'}
-                  </p>
-                  <p>
-                    <strong>Language:</strong>{' '}
-                    {diagnosticData.browserInfo.language || 'Unknown language'}
-                  </p>
-                </>
-              )}
-            </div>
+            <MetadataTable metadata={diagnosticData.basicInfo} />
           </TabsContent>
           <TabsContent value="entityInfo" className="h-[calc(100%-3rem)]">
             <MetadataTable metadata={diagnosticData.entityInfo} />

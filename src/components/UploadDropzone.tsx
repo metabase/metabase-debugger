@@ -20,12 +20,15 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
             const parsedData = JSON.parse(result)
 
             const diagnosticData: DiagnosticData = {
-              entityName: parsedData.entityName || '',
-              bugReportDetails: parsedData.bugReportDetails || {},
-              url: parsedData.url || '',
+              basicInfo: {
+                description: parsedData.description || 'No description provided',
+                url: parsedData.url || 'Unknown URL',
+                bugReportDetails: parsedData.bugReportDetails || {},
+                browserInfo: parsedData.browserInfo || {},
+              },
               entityInfo: {
+                entityName: parsedData.entityName || '',
                 ...parsedData.entityInfo,
-                bugReportDetails: parsedData.bugReportDetails,
               },
               frontendErrors: Array.isArray(parsedData.frontendErrors)
                 ? parsedData.frontendErrors
@@ -35,11 +38,8 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
                 : [],
               userLogs: Array.isArray(parsedData.userLogs) ? parsedData.userLogs : [],
               logs: Array.isArray(parsedData.logs) ? parsedData.logs : [],
-              description: parsedData.description || 'No description provided',
-              browserInfo: parsedData.browserInfo || {},
               queryResults: parsedData.queryResults || {},
             }
-
             onFileUpload(diagnosticData)
           }
         } catch (error) {
