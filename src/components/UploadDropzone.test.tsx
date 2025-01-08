@@ -28,8 +28,7 @@ describe('UploadDropzone', () => {
     const fileContent = {
       url: 'https://test.com',
       description: 'Test description',
-      entityInfo: {
-      },
+      entityInfo: {},
 
       browserInfo: { browserName: 'Chrome' },
       frontendErrors: [],
@@ -51,7 +50,7 @@ describe('UploadDropzone', () => {
         basicInfo: expect.objectContaining({
           url: 'https://test.com',
           description: 'Test description',
-        })
+        }),
       })
     )
   })

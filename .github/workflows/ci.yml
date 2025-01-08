@@ -8,19 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'yarn'
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🧪 Run tests
         run: yarn test:ci
-        
+
       - name: 📊 Upload test results
         if: always()
         uses: actions/upload-artifact@v3
@@ -35,19 +35,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'yarn'
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: 🔍 Run ESLint
         run: yarn lint
-        
+
       - name: 💅 Check formatting
         run: yarn format:check
 
@@ -56,15 +56,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'yarn'
-          
+
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
-        
+
       - name: ʦ Type check
         run: yarn tsc --noEmit

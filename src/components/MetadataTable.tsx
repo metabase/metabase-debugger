@@ -66,11 +66,7 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
     return <p className="text-center">No data 🙁</p>
   }
 
-  return (
-    <ScrollArea className="h-[calc(100vh-12rem)] w-full">
-      {renderTable(metadata)}
-    </ScrollArea>
-  )
+  return <ScrollArea className="h-[calc(100vh-12rem)] w-full">{renderTable(metadata)}</ScrollArea>
 }
 
 export { MetadataTable }

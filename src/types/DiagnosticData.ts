@@ -6,12 +6,12 @@ export interface DiagnosticData {
     browserInfo?: Record<string, any>
     'metabase-info'?: Record<string, any>
     'system-info'?: Record<string, any>
-  },
+  }
   entityInfo: {
     entityName: string
     name: string
     [key: string]: any
-  },
+  }
   frontendErrors: any[]
   backendErrors: any[]
   userLogs: any[]
