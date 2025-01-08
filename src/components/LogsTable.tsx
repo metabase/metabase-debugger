@@ -10,13 +10,29 @@ interface LogEntry {
   level: string
   fqns: string
   msg: string
-  exception: string | null
+  exception: string[] | null
   process_uuid: string
 }
 
 interface LogsTableProps {
   logs: LogEntry[]
   title: string
+}
+
+interface ExceptionLine {
+  type: 'exception'
+  raw: string
+  formatted: string
+}
+
+interface FrameLine {
+  type: 'frame'
+  namespace: string
+  method: string
+  file: string
+  lineNum: number
+  raw: string
+  isMetabaseFrame: boolean
 }
 
 const getLevelColor = (level: string) => {
@@ -106,6 +122,110 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
     [filteredLogs]
   )
 
+  const prettyPrintClojure = (str: string) => {
+    let depth = 0
+    let inString = false
+    let formatted = ''
+
+    for (let i = 0; i < str.length; i++) {
+      const char = str[i]
+
+      // Handle string literals
+      if (char === '"' && str[i - 1] !== '\\') {
+        inString = !inString
+        formatted += char
+        continue
+      }
+
+      if (inString) {
+        formatted += char
+        continue
+      }
+
+      // Handle brackets and braces
+      if (char === '{' || char === '[' || char === '(') {
+        depth++
+        formatted += char + '\n' + '  '.repeat(depth)
+      } else if (char === '}' || char === ']' || char === ')') {
+        depth--
+        formatted += '\n' + '  '.repeat(depth) + char
+      } else if (
+        char === ' ' &&
+        (str[i - 1] === ',' || str[i - 1] === '}' || str[i - 1] === ']' || str[i - 1] === ')')
+      ) {
+        formatted += '\n' + '  '.repeat(depth)
+      } else {
+        formatted += char
+      }
+    }
+    return formatted
+  }
+
+  const preprocessStacktrace = (trace: string) => {
+    if (!trace) return ''
+    return trace.replace(/\t+at\s+|\s+at\s+/g, '\n at ').trim()
+  }
+
+  const formatStacktrace = (lines: string[]) => {
+    if (!lines) return []
+
+    const formattedLines = new Array<ExceptionLine | FrameLine>()
+
+    // Process first line (exception)
+    if (lines[0]) {
+      const excLine = preprocessStacktrace(lines[0])
+      const match = excLine.match(/^([^{[\n]+)({.+|[.+])/s)
+      if (match) {
+        // eslint-disable-next-line no-unused-vars
+        const [_, prefix, clojureData] = match
+        formattedLines.push({
+          type: 'exception',
+          raw: excLine,
+          formatted: prefix + '\n' + prettyPrintClojure(clojureData),
+        })
+      } else {
+        formattedLines.push({
+          type: 'exception',
+          raw: excLine,
+          formatted: excLine,
+        })
+      }
+    }
+
+    // Process stack frames
+    const framePattern = /\s*at\s+([a-zA-Z0-9.$_/]+(?:\$[^(]+)?)\s*\(([\w.]+):(\d+)\)/
+
+    lines.slice(1).forEach((line) => {
+      const frameLine = preprocessStacktrace(line)
+      const match = frameLine.match(framePattern)
+      if (match) {
+        // eslint-disable-next-line no-unused-vars
+        const [_, fullMethod, file, lineNum] = match
+        const lastDotIndex = fullMethod.lastIndexOf('.')
+        const namespace = fullMethod.substring(0, lastDotIndex)
+        const method = fullMethod.substring(lastDotIndex + 1)
+
+        const isMetabaseFrame = namespace.startsWith('metabase')
+
+        if (isMetabaseFrame || !showOnlyMetabaseFrames) {
+          formattedLines.push({
+            type: 'frame',
+            namespace,
+            method,
+            file,
+            lineNum: parseInt(lineNum),
+            raw: frameLine,
+            isMetabaseFrame,
+          })
+        }
+      }
+    })
+
+    return formattedLines
+  }
+
+  const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true)
+
   return (
     <>
       <Input
@@ -115,6 +235,17 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4"
       />
+      <div className="mb-4 flex items-center space-x-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={showOnlyMetabaseFrames}
+            onChange={(e) => setShowOnlyMetabaseFrames(e.target.checked)}
+            className="rounded"
+          />
+          <span className="text-sm">Show only metabase stack frames</span>
+        </label>
+      </div>
       <ScrollArea className="h-[calc(100vh-240px)] w-full rounded-md border">
         <Table>
           <TableBody>
@@ -159,7 +290,51 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                           <div>
                             <strong>Exception:</strong>
                             <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
-                              {log.exception}
+                              {formatStacktrace(log.exception).map((line, i) => {
+                                if (line.type === 'exception') {
+                                  return (
+                                    <div
+                                      key={i}
+                                      className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
+                                    >
+                                      <div className="text-gray-200 whitespace-pre">
+                                        {line.formatted}
+                                      </div>
+                                    </div>
+                                  )
+                                }
+                                return (
+                                  <div
+                                    key={i}
+                                    className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
+                                  >
+                                    <span
+                                      className={
+                                        line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
+                                      }
+                                    >
+                                      at{' '}
+                                    </span>
+                                    <span
+                                      className={
+                                        line.isMetabaseFrame ? 'text-gray-400' : 'text-gray-600'
+                                      }
+                                    >
+                                      {line.namespace}
+                                    </span>
+                                    <span
+                                      className={`${line.isMetabaseFrame ? 'text-gray-200 font-bold' : 'text-gray-600 '}`}
+                                    >
+                                      .{line.method}
+                                    </span>
+                                    <span className="text-gray-500"> (</span>
+                                    <span className="text-purple-500">{line.file}</span>
+                                    <span className="text-purple-900">:</span>
+                                    <span className="text-purple-700">{line.lineNum}</span>
+                                    <span className="text-gray-600">)</span>
+                                  </div>
+                                )
+                              })}
                             </pre>
                           </div>
                         )}
