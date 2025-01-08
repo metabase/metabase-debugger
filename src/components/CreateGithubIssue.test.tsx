@@ -5,9 +5,14 @@ import { render, screen, fireEvent } from '../test/test-utils'
 
 describe('CreateGithubIssue', () => {
   const mockDiagnosticData = {
-    url: 'https://test.metabase.com',
-    description: 'Test description',
-    entityName: 'Test Entity',
+    basicInfo: {
+      url: 'https://test.metabase.com',
+      description: 'Test description',
+    },
+    entityInfo: {
+      name: 'Test Entity',
+      entityName: 'Test Entity',
+    },
   }
 
   beforeEach(() => {
@@ -71,8 +76,13 @@ describe('CreateGithubIssue', () => {
 
   it('handles missing optional data gracefully', () => {
     const minimalData = {
-      url: '',
-      entityName: '',
+      basicInfo: {
+        url: '',
+      },
+      entityInfo: {
+        entityName: '',
+        name: '',
+      },
     }
 
     render(<CreateGithubIssue diagnosticData={minimalData} />)

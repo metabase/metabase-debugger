@@ -28,10 +28,8 @@ describe('UploadDropzone', () => {
     const fileContent = {
       url: 'https://test.com',
       description: 'Test description',
-      entityInfo: {
-        'metabase-info': {},
-        'system-info': {},
-      },
+      entityInfo: {},
+
       browserInfo: { browserName: 'Chrome' },
       frontendErrors: [],
       backendErrors: [],
@@ -49,8 +47,10 @@ describe('UploadDropzone', () => {
     expect(mockOnFileUpload).toHaveBeenCalledTimes(1)
     expect(mockOnFileUpload).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: 'https://test.com',
-        description: 'Test description',
+        basicInfo: expect.objectContaining({
+          url: 'https://test.com',
+          description: 'Test description',
+        }),
       })
     )
   })
