@@ -10,8 +10,9 @@ describe('CreateGithubIssue', () => {
       description: 'Test description',
     },
     entityInfo: {
+      name: 'Test Entity',
       entityName: 'Test Entity',
-    }
+    },
   }
 
   beforeEach(() => {
@@ -80,7 +81,8 @@ describe('CreateGithubIssue', () => {
       },
       entityInfo: {
         entityName: '',
-      }
+        name: '',
+      },
     }
 
     render(<CreateGithubIssue diagnosticData={minimalData} />)

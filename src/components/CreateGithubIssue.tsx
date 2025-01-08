@@ -4,7 +4,7 @@ import type { DiagnosticData } from '@/types/DiagnosticData'
 
 import { Button } from './ui/button'
 interface CreateGithubIssueProps {
-  diagnosticData: DiagnosticData
+  diagnosticData: Pick<DiagnosticData, 'basicInfo' | 'entityInfo'>
   slackFileId?: string
 }
 
