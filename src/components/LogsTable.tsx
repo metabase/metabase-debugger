@@ -33,6 +33,11 @@ interface FrameLine {
   lineNum: number
   raw: string
   isMetabaseFrame: boolean
+  codeUrl: string | null
+}
+
+interface FrameLineProps {
+  line: FrameLine
 }
 
 const getLevelColor = (level: string) => {
@@ -91,6 +96,24 @@ const formatMessage = (msg: string) => {
 
 const stripAnsiCodes = (text: string) => {
   return text.replace(/\x1b\[\d+m/g, '')
+}
+
+const FrameLine: React.FC<FrameLineProps> = ({ line }) => {
+  return (
+    <>
+      <span className={line.isMetabaseFrame ? 'text-gray-400' : 'text-gray-600'}>
+        {line.namespace}
+      </span>
+      <span className={`${line.isMetabaseFrame ? 'text-gray-200 font-bold' : 'text-gray-600 '}`}>
+        .{line.method}
+      </span>
+      <span className="text-gray-500"> (</span>
+      <span className="text-purple-500">{line.file}</span>
+      <span className="text-purple-900">:</span>
+      <span className="text-purple-700">{line.lineNum}</span>
+      <span className="text-gray-600">)</span>
+    </>
+  )
 }
 
 const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
@@ -204,8 +227,12 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
         const lastDotIndex = fullMethod.lastIndexOf('.')
         const namespace = fullMethod.substring(0, lastDotIndex)
         const method = fullMethod.substring(lastDotIndex + 1)
+        const path = namespace.substring(0, namespace.lastIndexOf('.')).replaceAll('.', '/')
 
         const isMetabaseFrame = namespace.startsWith('metabase')
+        const codeUrl = isMetabaseFrame
+          ? `https://github.com/metabase/metabase/tree/master/src/${path}/${file}#L${lineNum}`
+          : null
 
         if (isMetabaseFrame || !showOnlyMetabaseFrames) {
           formattedLines.push({
@@ -216,6 +243,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
             lineNum: parseInt(lineNum),
             raw: frameLine,
             isMetabaseFrame,
+            codeUrl,
           })
         }
       }
@@ -315,23 +343,18 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                                     >
                                       at{' '}
                                     </span>
-                                    <span
-                                      className={
-                                        line.isMetabaseFrame ? 'text-gray-400' : 'text-gray-600'
-                                      }
-                                    >
-                                      {line.namespace}
-                                    </span>
-                                    <span
-                                      className={`${line.isMetabaseFrame ? 'text-gray-200 font-bold' : 'text-gray-600 '}`}
-                                    >
-                                      .{line.method}
-                                    </span>
-                                    <span className="text-gray-500"> (</span>
-                                    <span className="text-purple-500">{line.file}</span>
-                                    <span className="text-purple-900">:</span>
-                                    <span className="text-purple-700">{line.lineNum}</span>
-                                    <span className="text-gray-600">)</span>
+                                    {line.codeUrl ? (
+                                      <a
+                                        href={line.codeUrl}
+                                        target="_blank"
+                                        title={`Open ${line.file} at line ${line.lineNum}`}
+                                        className="hover:bg-blend-lighten hover:bg-gray-800"
+                                      >
+                                        <FrameLine line={line} />
+                                      </a>
+                                    ) : (
+                                      <FrameLine line={line} />
+                                    )}
                                   </div>
                                 )
                               })}
