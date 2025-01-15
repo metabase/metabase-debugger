@@ -21,12 +21,17 @@ const sampleLogs: DiagnosticData['logs'] = [
     process_uuid: '2d2fddae-3437-4eb3-ac72-3afd7efb60df',
   },
   {
-    timestamp : '2024-12-13T19:33:27.528Z',
-    level : 'ERROR',
-    fqns : 'metabase.query-processor.middleware.process-userland-query',
-    msg : 'Error saving field usages',
-    exception : [ "clojure.lang.ExceptionInfo: Unknown type of ref {...}", "\tat metabase.lib.equality$find_matching_column32424__32427.invokeStatic(equality.cljc:308)", "\tat clojure.lang.AFn.run(AFn.java:22)", "\tat java.base/java.lang.Thread.run(Unknown Source)" ],
-    process_uuid : '498155e1-83a8-4c5f-927e-7a81fd74eeac'
+    timestamp: '2024-12-13T19:33:27.528Z',
+    level: 'ERROR',
+    fqns: 'metabase.query-processor.middleware.process-userland-query',
+    msg: 'Error saving field usages',
+    exception: [
+      'clojure.lang.ExceptionInfo: Unknown type of ref {...}',
+      '\tat metabase.lib.equality$find_matching_column32424__32427.invokeStatic(equality.cljc:308)',
+      '\tat clojure.lang.AFn.run(AFn.java:22)',
+      '\tat java.base/java.lang.Thread.run(Unknown Source)',
+    ],
+    process_uuid: '498155e1-83a8-4c5f-927e-7a81fd74eeac',
   },
 ]
 
@@ -73,12 +78,16 @@ describe('LogsTable', () => {
     render(<LogsTable logs={sampleLogs} title="Test Logs" />)
 
     const filterCheckbox = screen.getByTitle('Show only metabase stack frames')
-    
+
     expect(screen.queryByText('clojure.lang.AFn')).not.toBeInTheDocument()
-    expect(screen.queryByText('metabase.lib.equality$find_matching_column32424__32427')).toBeInTheDocument()
-    
+    expect(
+      screen.queryByText('metabase.lib.equality$find_matching_column32424__32427')
+    ).toBeInTheDocument()
+
     fireEvent.click(filterCheckbox)
-    expect(screen.queryByText('metabase.lib.equality$find_matching_column32424__32427')).toBeInTheDocument()
+    expect(
+      screen.queryByText('metabase.lib.equality$find_matching_column32424__32427')
+    ).toBeInTheDocument()
     expect(screen.queryByText('clojure.lang.AFn')).toBeInTheDocument()
   })
 })
