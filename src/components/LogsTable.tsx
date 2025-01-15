@@ -4,6 +4,8 @@ import React, { useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { parseStacktraceLines } from '@/lib/stacktraces'
+import type { FrameLine, FrameLine as FrameLineRenderer } from '@/lib/stacktraces'
 
 interface LogEntry {
   timestamp: string
@@ -19,86 +21,11 @@ interface LogsTableProps {
   title: string
 }
 
-interface ExceptionLine {
-  type: 'exception'
-  raw: string
-  formatted: string
-}
-
-interface FrameLine {
-  type: 'frame'
-  namespace: string
-  method: string
-  file: string
-  lineNum: number
-  raw: string
-  isMetabaseFrame: boolean
-  codeUrl: string | null
-}
-
 interface FrameLineProps {
   line: FrameLine
 }
 
-const getLevelColor = (level: string) => {
-  switch (level.toUpperCase()) {
-    case 'DEBUG':
-      return 'text-blue-500'
-    case 'INFO':
-      return 'text-green-500'
-    case 'WARN':
-      return 'text-yellow-500'
-    case 'ERROR':
-      return 'text-red-500'
-    default:
-      return 'text-gray-500'
-  }
-}
-
-const parseAnsiColors = (text: string) => {
-  const colorMap: { [key: string]: string } = {
-    '30': 'text-white',
-    '31': 'text-red-500',
-    '32': 'text-green-500',
-    '33': 'text-yellow-500',
-    '34': 'text-blue-500',
-    '35': 'text-purple-500',
-    '36': 'text-cyan-500',
-    '37': 'text-white',
-  }
-
-  const parts = text.split(/\x1b\[(\d+)m/)
-  return parts
-    .map((part, index) => {
-      if (index % 2 === 0) {
-        return part
-      }
-      const colorClass = colorMap[part] || ''
-      return `<span class="${colorClass}">`
-    })
-    .join('')
-}
-
-const formatMessage = (msg: string) => {
-  try {
-    const jsonObj = JSON.parse(msg)
-    return <pre className="whitespace-pre-wrap break-words">{JSON.stringify(jsonObj, null, 2)}</pre>
-  } catch {
-    const parsedMsg = parseAnsiColors(msg)
-    return (
-      <div
-        className="whitespace-pre-wrap break-words text-white"
-        dangerouslySetInnerHTML={{ __html: parsedMsg }}
-      />
-    )
-  }
-}
-
-const stripAnsiCodes = (text: string) => {
-  return text.replace(/\x1b\[\d+m/g, '')
-}
-
-const FrameLine: React.FC<FrameLineProps> = ({ line }) => {
+const FrameLineRenderer: React.FC<FrameLineProps> = ({ line }) => {
   return (
     <>
       <span className={line.isMetabaseFrame ? 'text-gray-400' : 'text-gray-600'}>
@@ -114,6 +41,21 @@ const FrameLine: React.FC<FrameLineProps> = ({ line }) => {
       <span className="text-gray-600">)</span>
     </>
   )
+}
+
+const getLevelColor = (level: string) => {
+  switch (level.toUpperCase()) {
+    case 'DEBUG':
+      return 'text-blue-500'
+    case 'INFO':
+      return 'text-green-500'
+    case 'WARN':
+      return 'text-yellow-500'
+    case 'ERROR':
+      return 'text-red-500'
+    default:
+      return 'text-gray-500'
+  }
 }
 
 const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
@@ -145,113 +87,6 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
     [filteredLogs]
   )
 
-  const prettyPrintClojure = (str: string) => {
-    let depth = 0
-    let inString = false
-    let formatted = ''
-
-    for (let i = 0; i < str.length; i++) {
-      const char = str[i]
-
-      // Handle string literals
-      if (char === '"' && str[i - 1] !== '\\') {
-        inString = !inString
-        formatted += char
-        continue
-      }
-
-      if (inString) {
-        formatted += char
-        continue
-      }
-
-      // Handle brackets and braces
-      if (char === '{' || char === '[' || char === '(') {
-        depth++
-        formatted += char + '\n' + '  '.repeat(depth)
-      } else if (char === '}' || char === ']' || char === ')') {
-        depth--
-        formatted += '\n' + '  '.repeat(depth) + char
-      } else if (
-        char === ' ' &&
-        (str[i - 1] === ',' || str[i - 1] === '}' || str[i - 1] === ']' || str[i - 1] === ')')
-      ) {
-        formatted += '\n' + '  '.repeat(depth)
-      } else {
-        formatted += char
-      }
-    }
-    return formatted
-  }
-
-  const preprocessStacktrace = (trace: string) => {
-    if (!trace) return ''
-    return trace.replace(/\t+at\s+|\s+at\s+/g, '\n at ').trim()
-  }
-
-  const formatStacktrace = (lines: string[]) => {
-    if (!lines) return []
-
-    const formattedLines = new Array<ExceptionLine | FrameLine>()
-
-    // Process first line (exception)
-    if (lines[0]) {
-      const excLine = preprocessStacktrace(lines[0])
-      const match = excLine.match(/^([^{[\n]+)({.+|[.+])/s)
-      if (match) {
-        // eslint-disable-next-line no-unused-vars
-        const [_, prefix, clojureData] = match
-        formattedLines.push({
-          type: 'exception',
-          raw: excLine,
-          formatted: prefix + '\n' + prettyPrintClojure(clojureData),
-        })
-      } else {
-        formattedLines.push({
-          type: 'exception',
-          raw: excLine,
-          formatted: excLine,
-        })
-      }
-    }
-
-    // Process stack frames
-    const framePattern = /\s*at\s+([a-zA-Z0-9.$_/]+(?:\$[^(]+)?)\s*\(([\w.]+):(\d+)\)/
-
-    lines.slice(1).forEach((line) => {
-      const frameLine = preprocessStacktrace(line)
-      const match = frameLine.match(framePattern)
-      if (match) {
-        // eslint-disable-next-line no-unused-vars
-        const [_, fullMethod, file, lineNum] = match
-        const lastDotIndex = fullMethod.lastIndexOf('.')
-        const namespace = fullMethod.substring(0, lastDotIndex)
-        const method = fullMethod.substring(lastDotIndex + 1)
-        const path = namespace.substring(0, namespace.lastIndexOf('.')).replaceAll('.', '/')
-
-        const isMetabaseFrame = namespace.startsWith('metabase')
-        const codeUrl = isMetabaseFrame
-          ? `https://github.com/metabase/metabase/tree/master/src/${path}/${file}#L${lineNum}`
-          : null
-
-        if (isMetabaseFrame || !showOnlyMetabaseFrames) {
-          formattedLines.push({
-            type: 'frame',
-            namespace,
-            method,
-            file,
-            lineNum: parseInt(lineNum),
-            raw: frameLine,
-            isMetabaseFrame,
-            codeUrl,
-          })
-        }
-      }
-    })
-
-    return formattedLines
-  }
-
   const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true)
 
   return (
@@ -270,6 +105,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
             checked={showOnlyMetabaseFrames}
             onChange={(e) => setShowOnlyMetabaseFrames(e.target.checked)}
             className="rounded"
+            title="Show only metabase stack frames"
           />
           <span className="text-sm">Show only metabase stack frames</span>
         </label>
@@ -280,7 +116,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
             {sortedLogs.map((log, index) => (
               <React.Fragment key={index}>
                 <TableRow className="cursor-pointer" onClick={() => toggleItem(index)}>
-                  <TableCell className="w-[40px] p-0">
+                  <TableCell className="p-2">
                     <ChevronRight
                       className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
                         openItems.includes(index) ? 'rotate-90' : ''
@@ -292,7 +128,7 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                   </TableCell>
                   <TableCell className={getLevelColor(log.level)}>{log.level}</TableCell>
                   <TableCell className="font-mono max-w-[500px] truncate w-full">
-                    {stripAnsiCodes(log.msg)}
+                    {log.msg}
                   </TableCell>
                 </TableRow>
                 <TableRow className="bg-gray-700 text-white h-0">
@@ -311,53 +147,57 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                         <div>
                           <strong>Message:</strong>
                           <div className="mt-2 p-2 bg-slate-900 rounded-md font-mono">
-                            {formatMessage(log.msg)}
+                            <div className="whitespace-pre-wrap break-words text-white">
+                              {log.msg}
+                            </div>
                           </div>
                         </div>
                         {log.exception && (
                           <div>
                             <strong>Exception:</strong>
                             <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
-                              {formatStacktrace(log.exception).map((line, i) => {
-                                if (line.type === 'exception') {
+                              {parseStacktraceLines(log.exception, showOnlyMetabaseFrames).map(
+                                (line, i) => {
+                                  if (line.type === 'exception') {
+                                    return (
+                                      <div
+                                        key={i}
+                                        className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
+                                      >
+                                        <div className="text-gray-200 whitespace-pre">
+                                          {line.formatted}
+                                        </div>
+                                      </div>
+                                    )
+                                  }
                                   return (
                                     <div
                                       key={i}
-                                      className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
+                                      className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
                                     >
-                                      <div className="text-gray-200 whitespace-pre">
-                                        {line.formatted}
-                                      </div>
+                                      <span
+                                        className={
+                                          line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
+                                        }
+                                      >
+                                        at{' '}
+                                      </span>
+                                      {line.codeUrl ? (
+                                        <a
+                                          href={line.codeUrl}
+                                          target="_blank"
+                                          title={`Open ${line.file} at line ${line.lineNum}`}
+                                          className="hover:bg-blend-lighten hover:bg-gray-800"
+                                        >
+                                          <FrameLineRenderer line={line} />
+                                        </a>
+                                      ) : (
+                                        <FrameLineRenderer line={line} />
+                                      )}
                                     </div>
                                   )
                                 }
-                                return (
-                                  <div
-                                    key={i}
-                                    className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
-                                  >
-                                    <span
-                                      className={
-                                        line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
-                                      }
-                                    >
-                                      at{' '}
-                                    </span>
-                                    {line.codeUrl ? (
-                                      <a
-                                        href={line.codeUrl}
-                                        target="_blank"
-                                        title={`Open ${line.file} at line ${line.lineNum}`}
-                                        className="hover:bg-blend-lighten hover:bg-gray-800"
-                                      >
-                                        <FrameLine line={line} />
-                                      </a>
-                                    ) : (
-                                      <FrameLine line={line} />
-                                    )}
-                                  </div>
-                                )
-                              })}
+                              )}
                             </pre>
                           </div>
                         )}
