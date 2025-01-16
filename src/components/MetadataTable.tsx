@@ -1,18 +1,19 @@
 import React from 'react'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 interface MetadataTableProps {
   metadata: Record<string, any>
 }
+
+const MetadataCell = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) => <td className={`p-2 max-w-12 overflow-x-auto ${className ?? ''}`}>{children}</td>
 
 const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
   const renderValue = (value: any): React.ReactNode => {
@@ -30,8 +31,8 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
           <TableBody>
             {Object.entries(value).map(([subKey, subValue]) => (
               <TableRow key={subKey}>
-                <TableCell className="font-medium">{subKey}</TableCell>
-                <TableCell>{renderValue(subValue)}</TableCell>
+                <MetadataCell className="font-medium">{subKey}</MetadataCell>
+                <MetadataCell>{renderValue(subValue)}</MetadataCell>
               </TableRow>
             ))}
           </TableBody>
@@ -53,8 +54,8 @@ const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
         <TableBody>
           {Object.entries(data).map(([key, value]) => (
             <TableRow key={key}>
-              <TableCell className="font-medium">{key}</TableCell>
-              <TableCell>{renderValue(value)}</TableCell>
+              <MetadataCell className="font-medium">{key}</MetadataCell>
+              <MetadataCell>{renderValue(value)}</MetadataCell>
             </TableRow>
           ))}
         </TableBody>
