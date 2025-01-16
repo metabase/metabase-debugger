@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { parseStacktraceLines } from '@/lib/stacktraces'
-import type { FrameLine, FrameLine as FrameLineRenderer } from '@/lib/stacktraces'
+import type { FrameLine, ExceptionLine } from '@/lib/stacktraces'
 
 interface LogEntry {
   timestamp: string
@@ -26,7 +26,7 @@ interface FrameLineProps {
 }
 
 const FrameLineRenderer: React.FC<FrameLineProps> = ({ line }) => {
-  return (
+  const formattedLine = (
     <>
       <span className={line.isMetabaseFrame ? 'text-gray-400' : 'text-gray-600'}>
         {line.namespace}
@@ -40,6 +40,44 @@ const FrameLineRenderer: React.FC<FrameLineProps> = ({ line }) => {
       <span className="text-purple-700">{line.lineNum}</span>
       <span className="text-gray-600">)</span>
     </>
+  );
+
+  return (
+    <div
+      className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
+    >
+      <span
+        className={
+          line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
+        }
+      >
+        at{' '}
+      </span>
+      {line.codeUrl ? (
+        <a
+          href={line.codeUrl}
+          target="_blank"
+          title={`Open ${line.file} at line ${line.lineNum}`}
+          className="hover:bg-blend-lighten hover:bg-gray-800"
+        >
+          {formattedLine}
+        </a>
+      ) : (
+        formattedLine
+      )}
+    </div>
+  )
+}
+
+const ExceptionLineRenderer: React.FC<{ line: ExceptionLine }> = ({ line }) => {
+  return (
+    <div
+      className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
+    >
+      <div className="text-gray-200 whitespace-pre">
+        {line.formatted}
+      </div>
+    </div>
   )
 }
 
@@ -56,6 +94,26 @@ const getLevelColor = (level: string) => {
     default:
       return 'text-gray-500'
   }
+}
+
+function FormattedException({ lines, showOnlyMetabaseFrames }: { lines: string[], showOnlyMetabaseFrames: boolean }) {
+  const parsedLines = parseStacktraceLines(lines, showOnlyMetabaseFrames);
+
+  return (
+    <div>
+      <strong>Exception:</strong>
+      <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
+        {parsedLines.map(
+          (line, i) => (
+            line.type === 'exception' ? (
+              <ExceptionLineRenderer key={i} line={line} />
+            ) : (
+              <FrameLineRenderer key={i} line={line} />
+            )
+          ))}
+      </pre>
+    </div>
+  );
 }
 
 const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
@@ -153,53 +211,10 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
                           </div>
                         </div>
                         {log.exception && (
-                          <div>
-                            <strong>Exception:</strong>
-                            <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
-                              {parseStacktraceLines(log.exception, showOnlyMetabaseFrames).map(
-                                (line, i) => {
-                                  if (line.type === 'exception') {
-                                    return (
-                                      <div
-                                        key={i}
-                                        className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
-                                      >
-                                        <div className="text-gray-200 whitespace-pre">
-                                          {line.formatted}
-                                        </div>
-                                      </div>
-                                    )
-                                  }
-                                  return (
-                                    <div
-                                      key={i}
-                                      className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
-                                    >
-                                      <span
-                                        className={
-                                          line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
-                                        }
-                                      >
-                                        at{' '}
-                                      </span>
-                                      {line.codeUrl ? (
-                                        <a
-                                          href={line.codeUrl}
-                                          target="_blank"
-                                          title={`Open ${line.file} at line ${line.lineNum}`}
-                                          className="hover:bg-blend-lighten hover:bg-gray-800"
-                                        >
-                                          <FrameLineRenderer line={line} />
-                                        </a>
-                                      ) : (
-                                        <FrameLineRenderer line={line} />
-                                      )}
-                                    </div>
-                                  )
-                                }
-                              )}
-                            </pre>
-                          </div>
+                          <FormattedException
+                            lines={log.exception}
+                            showOnlyMetabaseFrames={showOnlyMetabaseFrames}
+                          />
                         )}
                         <p>
                           <strong>Process UUID:</strong> {log.process_uuid}
