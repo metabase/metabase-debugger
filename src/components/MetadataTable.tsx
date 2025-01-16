@@ -1,23 +1,19 @@
 import React from 'react'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 interface MetadataTableProps {
   metadata: Record<string, any>
 }
 
-const MetadataCell = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <td className={`p-2 max-w-12 overflow-x-auto ${className ?? ''}`}>
-    {children}
-  </td>
-);
+const MetadataCell = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) => <td className={`p-2 max-w-12 overflow-x-auto ${className ?? ''}`}>{children}</td>
 
 const MetadataTable: React.FC<MetadataTableProps> = ({ metadata }) => {
   const renderValue = (value: any): React.ReactNode => {

@@ -40,19 +40,13 @@ const FrameLineRenderer: React.FC<FrameLineProps> = ({ line }) => {
       <span className="text-purple-700">{line.lineNum}</span>
       <span className="text-gray-600">)</span>
     </>
-  );
+  )
 
   return (
     <div
       className={`font-mono text-sm mb-1 pl-4 border-l-4  ${line.isMetabaseFrame ? 'border-teal-500' : ' border-gray-700'}`}
     >
-      <span
-        className={
-          line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'
-        }
-      >
-        at{' '}
-      </span>
+      <span className={line.isMetabaseFrame ? 'text-gray-600' : 'text-gray-700'}>at </span>
       {line.codeUrl ? (
         <a
           href={line.codeUrl}
@@ -71,12 +65,8 @@ const FrameLineRenderer: React.FC<FrameLineProps> = ({ line }) => {
 
 const ExceptionLineRenderer: React.FC<{ line: ExceptionLine }> = ({ line }) => {
   return (
-    <div
-      className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500"
-    >
-      <div className="text-gray-200 whitespace-pre">
-        {line.formatted}
-      </div>
+    <div className="font-mono text-sm mb-4 pl-4 border-l-4 border-red-500">
+      <div className="text-gray-200 whitespace-pre">{line.formatted}</div>
     </div>
   )
 }
@@ -96,24 +86,29 @@ const getLevelColor = (level: string) => {
   }
 }
 
-function FormattedException({ lines, showOnlyMetabaseFrames }: { lines: string[], showOnlyMetabaseFrames: boolean }) {
-  const parsedLines = parseStacktraceLines(lines, showOnlyMetabaseFrames);
+function FormattedException({
+  lines,
+  showOnlyMetabaseFrames,
+}: {
+  lines: string[]
+  showOnlyMetabaseFrames: boolean
+}) {
+  const parsedLines = parseStacktraceLines(lines, showOnlyMetabaseFrames)
 
   return (
     <div>
       <strong>Exception:</strong>
       <pre className="mt-2 p-2 bg-slate-900 rounded-md whitespace-pre-wrap break-words">
-        {parsedLines.map(
-          (line, i) => (
-            line.type === 'exception' ? (
-              <ExceptionLineRenderer key={i} line={line} />
-            ) : (
-              <FrameLineRenderer key={i} line={line} />
-            )
-          ))}
+        {parsedLines.map((line, i) =>
+          line.type === 'exception' ? (
+            <ExceptionLineRenderer key={i} line={line} />
+          ) : (
+            <FrameLineRenderer key={i} line={line} />
+          )
+        )}
       </pre>
     </div>
-  );
+  )
 }
 
 const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
