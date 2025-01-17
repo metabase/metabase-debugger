@@ -8,20 +8,44 @@ import { render, screen } from '../test/test-utils'
 
 describe('DevToolsUI', () => {
   const sampleDiagnosticData: DiagnosticData = {
-    basicInfo: {
-      url: 'https://test.com',
-      description: 'Test description',
-      bugReportDetails: {},
-      browserInfo: {
-        browserName: 'Chrome',
-        browserVersion: '100.0.0',
-        os: 'Windows',
-        osVersion: '10',
-        platform: 'Desktop',
-        language: 'en-US',
+    url: 'https://test.com',
+    description: 'Test description',
+    bugReportDetails: {
+      'metabase-info': {
+        databases: [
+          'athena',
+          'postgres',
+          'mysql',
+          'redshift',
+          'bigquery-cloud-sdk',
+          'h2',
+          'druid-jdbc',
+          'databricks',
+          'mongo',
+          'snowflake',
+        ],
+        'run-mode': 'prod',
+        'plan-alias': 'internal',
+        version: {
+          date: '2025-01-10',
+          tag: 'vUNKNOWN',
+          hash: '68b5038',
+        },
+        settings: {
+          'report-timezone': 'US/Pacific',
+        },
+        'hosting-env': 'unknown',
+        'application-database': 'postgres',
       },
-      'metabase-info': {},
       'system-info': {},
+    },
+    browserInfo: {
+      browserName: 'Chrome',
+      browserVersion: '100.0.0',
+      os: 'Windows',
+      osVersion: '10',
+      platform: 'Desktop',
+      language: 'en-US',
     },
     entityInfo: {
       entityName: 'question',
@@ -85,17 +109,14 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Check URL and description
-    expect(screen.getByText('url')).toBeInTheDocument()
+    expect(screen.getByText('Occurred at:')).toBeInTheDocument()
     expect(screen.getByText('https://test.com')).toBeInTheDocument()
-    expect(screen.getByText('description')).toBeInTheDocument()
     expect(screen.getByText('Test description')).toBeInTheDocument()
 
     // Check browser info
-    expect(screen.getByText('browserInfo')).toBeInTheDocument()
-    expect(screen.getByText('Chrome')).toBeInTheDocument()
-    expect(screen.getByText('100.0.0')).toBeInTheDocument()
-    expect(screen.getByText('os')).toBeInTheDocument()
-    expect(screen.getByText('Windows')).toBeInTheDocument()
+    expect(screen.getByText('Chrome 100.0.0')).toBeInTheDocument()
+    expect(screen.getByText('Windows 10')).toBeInTheDocument()
+    expect(screen.getByText('en-US')).toBeInTheDocument()
   })
 
   it('switches tabs correctly', async () => {
@@ -103,7 +124,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Click Console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output' }))
+    await user.click(screen.getByRole('tab', { name: 'Console output 4' }))
     expect(
       screen.getByText('[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts')
     ).toBeInTheDocument()
@@ -126,18 +147,16 @@ describe('DevToolsUI', () => {
     await user.click(screen.getByRole('tab', { name: 'Raw Data' }))
 
     // Check if JSON data is displayed
-    expect(screen.getByText(/"url":/)).toBeInTheDocument()
-    expect(screen.getByText(/"description":/)).toBeInTheDocument()
+    expect(screen.getByText('system-info')).toBeInTheDocument()
+    expect(screen.getByText('metabase-info')).toBeInTheDocument()
   })
 
   it('handles empty diagnostic data', () => {
     const emptyData: DiagnosticData = {
-      basicInfo: {
-        url: '',
-        bugReportDetails: {},
-        description: '',
-        browserInfo: {},
-      },
+      url: '',
+      bugReportDetails: {},
+      description: '',
+      browserInfo: {},
       entityInfo: {
         entityName: '',
         name: '',
@@ -151,9 +170,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={emptyData} />)
 
     // Should still render without errors
-    expect(screen.getByText('url')).toBeInTheDocument()
-    expect(screen.getByText('browserInfo')).toBeInTheDocument()
-    expect(screen.getByText('description')).toBeInTheDocument()
+    expect(screen.getByText('No description provided')).toBeInTheDocument()
   })
 
   it('updates frontend error count', async () => {
@@ -161,7 +178,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Switch to console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output' }))
+    await user.click(screen.getByRole('tab', { name: 'Console output 4' }))
 
     // Check if error count badge is updated
     const frontendErrorsBadge = screen.getByText('3')

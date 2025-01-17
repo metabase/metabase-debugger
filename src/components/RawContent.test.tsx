@@ -9,19 +9,20 @@ describe('RawContent', () => {
     Element.prototype.scrollIntoView = vi.fn()
   })
 
-  const sampleContent = `{
-    "first": "apple",
-    "second": "banana",
-    "third": "apple",
-    "fourth": "cherry"
-  }`
+  const sampleContent = {
+    first: 'apple',
+    second: 'banana',
+    third: 'apple',
+    fourth: 'cherry',
+  }
 
   it('renders without crashing', () => {
-    expect(() => render(<RawContent content="{}" />)).not.toThrow()
+    expect(() => render(<RawContent content={{}} />)).not.toThrow()
   })
 
   it('displays JSON content correctly', () => {
     render(<RawContent content={sampleContent} />)
-    expect(screen.getByText(/"first": "apple"/)).toBeInTheDocument()
+    expect(screen.getByText('first')).toBeInTheDocument()
+    expect(screen.getByText('"cherry"')).toBeInTheDocument()
   })
 })

@@ -14,7 +14,7 @@ interface QueryResultsProps {
   }
 }
 
-export function QueryResults({ data }: QueryResultsProps) {
+export function QueryResultsPanel({ data }: QueryResultsProps) {
   if (!data?.data?.rows || !data?.data?.cols) {
     return <div className="p-4 text-gray-500">No query results available</div>
   }

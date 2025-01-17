@@ -22,8 +22,8 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: theme('colors.sky.500');
+    --accent-foreground: theme('colors.sky.500');
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -97,6 +97,14 @@
 }
 .CollapsibleContent[data-state='closed'] {
   animation: slideUp 100ms ease-out;
+}
+
+a, a:visited, a:hover {
+  color: var(--accent-foreground);
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 @keyframes slideDown {

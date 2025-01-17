@@ -29,7 +29,6 @@ describe('UploadDropzone', () => {
       url: 'https://test.com',
       description: 'Test description',
       entityInfo: {},
-
       browserInfo: { browserName: 'Chrome' },
       frontendErrors: [],
       backendErrors: [],
@@ -47,10 +46,8 @@ describe('UploadDropzone', () => {
     expect(mockOnFileUpload).toHaveBeenCalledTimes(1)
     expect(mockOnFileUpload).toHaveBeenCalledWith(
       expect.objectContaining({
-        basicInfo: expect.objectContaining({
-          url: 'https://test.com',
-          description: 'Test description',
-        }),
+        url: 'https://test.com',
+        description: 'Test description',
       })
     )
   })

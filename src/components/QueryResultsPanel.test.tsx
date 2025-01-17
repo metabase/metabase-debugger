@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 
-import { QueryResults } from './QueryResults'
+import { QueryResultsPanel } from './QueryResultsPanel'
 import { render, screen } from '../test/test-utils'
 
-describe('QueryResults', () => {
+describe('QueryResultsPanel', () => {
   const sampleData = {
     data: {
       rows: [
@@ -23,16 +23,16 @@ describe('QueryResults', () => {
   }
 
   it('renders without crashing', () => {
-    expect(() => render(<QueryResults data={undefined} />)).not.toThrow()
+    expect(() => render(<QueryResultsPanel data={undefined} />)).not.toThrow()
   })
 
   it('displays no results message when data is missing', () => {
-    render(<QueryResults data={undefined} />)
+    render(<QueryResultsPanel data={undefined} />)
     expect(screen.getByText('No query results available')).toBeInTheDocument()
   })
 
   it('renders table headers correctly', () => {
-    render(<QueryResults data={sampleData} />)
+    render(<QueryResultsPanel data={sampleData} />)
 
     expect(screen.getByText('ID')).toBeInTheDocument()
     expect(screen.getByText('Name')).toBeInTheDocument()
@@ -40,20 +40,20 @@ describe('QueryResults', () => {
   })
 
   it('renders table data correctly', () => {
-    render(<QueryResults data={sampleData} />)
+    render(<QueryResultsPanel data={sampleData} />)
 
     expect(screen.getByText('John Doe')).toBeInTheDocument()
     expect(screen.getByText('jane@example.com')).toBeInTheDocument()
   })
 
   it('displays native query when available', () => {
-    render(<QueryResults data={sampleData} />)
+    render(<QueryResultsPanel data={sampleData} />)
 
     expect(screen.getByText('SELECT * FROM users LIMIT 2')).toBeInTheDocument()
   })
 
   it('shows truncated rows message', () => {
-    render(<QueryResults data={sampleData} />)
+    render(<QueryResultsPanel data={sampleData} />)
 
     expect(screen.getByText('Showing 2 rows (truncated)')).toBeInTheDocument()
   })
@@ -70,7 +70,7 @@ describe('QueryResults', () => {
       },
     }
 
-    render(<QueryResults data={dataWithNull} />)
+    render(<QueryResultsPanel data={dataWithNull} />)
     expect(screen.getByText('null')).toBeInTheDocument()
   })
 
@@ -86,7 +86,7 @@ describe('QueryResults', () => {
       },
     }
 
-    render(<QueryResults data={dataWithObject} />)
+    render(<QueryResultsPanel data={dataWithObject} />)
     expect(screen.getByText('{"firstName":"John","lastName":"Doe"}')).toBeInTheDocument()
   })
 
@@ -98,7 +98,7 @@ describe('QueryResults', () => {
       },
     }
 
-    render(<QueryResults data={nonTruncatedData} />)
+    render(<QueryResultsPanel data={nonTruncatedData} />)
     expect(screen.getByText('Total rows: 2')).toBeInTheDocument()
   })
 })
