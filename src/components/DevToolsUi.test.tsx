@@ -4,67 +4,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
 import { DevToolsUI } from './DevToolsUi'
-import { render, screen } from '../test/test-utils'
+import { render, screen, sampleDiagnosticData } from '../test/test-utils'
 
 describe('DevToolsUI', () => {
-  const sampleDiagnosticData: DiagnosticData = {
-    url: 'https://test.com',
-    description: 'Test description',
-    bugReportDetails: {
-      'metabase-info': {
-        databases: [
-          'athena',
-          'postgres',
-          'mysql',
-          'redshift',
-          'bigquery-cloud-sdk',
-          'h2',
-          'druid-jdbc',
-          'databricks',
-          'mongo',
-          'snowflake',
-        ],
-        'run-mode': 'prod',
-        'plan-alias': 'internal',
-        version: {
-          date: '2025-01-10',
-          tag: 'vUNKNOWN',
-          hash: '68b5038',
-        },
-        settings: {
-          'report-timezone': 'US/Pacific',
-        },
-        'hosting-env': 'unknown',
-        'application-database': 'postgres',
-      },
-      'system-info': {},
-    },
-    browserInfo: {
-      browserName: 'Chrome',
-      browserVersion: '100.0.0',
-      os: 'Windows',
-      osVersion: '10',
-      platform: 'Desktop',
-      language: 'en-US',
-    },
-    entityInfo: {
-      entityName: 'question',
-      name: "Test Question's Name",
-    },
-    frontendErrors: [
-      '"[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts\\n  × Module not found: Error message 1"',
-      '"[webpack-dev-server] ERROR in ./components/ErrorPages/tab.ts\\n  × Module not found: Error message 1"',
-      '"Warning: Something went wrong\\nStack trace for warning"',
-      '"[webpack-dev-server] Another error occurred\\nStack trace for error"',
-    ],
-    backendErrors: [
-      { message: 'Backend Error 1', timestamp: '2024-01-01' },
-      { message: 'Backend Error 2', timestamp: '2024-01-02' },
-    ],
-    userLogs: [{ message: 'User Log 1', timestamp: '2024-01-01' }],
-    logs: [{ message: 'System Log 1', timestamp: '2024-01-01' }],
-  }
-
   beforeEach(() => {
     // Mock window.open for GitHub issue creation
     vi.spyOn(window, 'open').mockImplementation(() => null)
@@ -130,6 +72,50 @@ describe('DevToolsUI', () => {
     ).toBeInTheDocument()
   })
 
+  it('is smart about selecting the details tab', async () => {
+    const defaultsToDetails: DiagnosticData = {
+      url: 'https://test.com',
+      bugReportDetails: {
+        'metabase-info': {},
+        'system-info': {},
+      },
+      browserInfo: undefined,
+      frontendErrors: [],
+      entityInfo: {
+        entityName: 'question',
+        name: "Test Question's Name",
+      },
+      backendErrors: [],
+      userLogs: [],
+      logs: [],
+    }
+
+    render(<DevToolsUI diagnosticData={defaultsToDetails} />)
+
+    // Should default to the bug report details tab
+    expect(screen.getByText('metabase-info')).toBeInTheDocument()
+  })
+
+  it('is smart about selecting the entity tab', async () => {
+    const defaultsToDetails: DiagnosticData = {
+      url: 'https://test.com',
+      bugReportDetails: undefined,
+      browserInfo: undefined,
+      frontendErrors: [],
+      entityInfo: {
+        entityName: 'question',
+        name: "Test Question's Name",
+      },
+      backendErrors: [],
+      userLogs: [],
+      logs: [],
+    }
+
+    render(<DevToolsUI diagnosticData={defaultsToDetails} />)
+
+    // Should default to the bug report details tab
+    expect(screen.getByText('entityName')).toBeInTheDocument()
+  })
   it('displays error badges correctly', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 

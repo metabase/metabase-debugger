@@ -5,7 +5,7 @@ import { DiagnosticData } from '@/types/DiagnosticData'
 import { Badge } from './ui/badge'
 
 interface DescriptionInfoProps {
-  diagnosticData: DiagnosticData
+  diagnosticData: Pick<DiagnosticData, 'url' | 'description'>
 }
 
 const truncateUrl = (url: string) => {

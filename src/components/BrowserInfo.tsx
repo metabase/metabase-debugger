@@ -37,11 +37,16 @@ const osIcon = (os: string) => {
 }
 
 const platformIcon = (platform: string) => {
-  switch (platform) {
-    case 'mobile':
-      return <Smartphone className={iconClass('fill')} width={ICON_SIZE} height={ICON_SIZE} />
-  }
-  return <Laptop className={iconClass('stroke')} width={ICON_SIZE} height={ICON_SIZE} />
+  return platform == 'mobile' ? (
+    <Smartphone
+      aria-details="Smartphone"
+      className={iconClass('fill')}
+      width={ICON_SIZE}
+      height={ICON_SIZE}
+    />
+  ) : (
+    <Laptop className={iconClass('stroke')} width={ICON_SIZE} height={ICON_SIZE} />
+  )
 }
 
 export const BrowserInfo = ({ browserInfo }: BrowserInfoProps) => {
