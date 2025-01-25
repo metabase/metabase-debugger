@@ -60,7 +60,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
               {diagnosticData.bugReportDetails && (
                 <TabsTrigger value="details">Details</TabsTrigger>
               )}
-              {diagnosticData.backendErrors?.length > 0 && (
+              {diagnosticData.backendErrors && (
                 <TabHeader
                   id="backendErrors"
                   title="Backend Errors"
@@ -68,22 +68,26 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
                   variant="destructive"
                 />
               )}
-              {diagnosticData.userLogs?.length > 0 && (
+              {diagnosticData.userLogs && (
                 <TabHeader id="userLogs" title="User Logs" count={diagnosticData.userLogs.length} />
               )}
-              {diagnosticData.logs?.length > 0 && (
+              {diagnosticData.logs && (
                 <TabHeader id="logs" title="System Logs" count={diagnosticData.logs.length} />
               )}
-              <TabHeader id="frontendErrors" title="Console output" count={frontendErrorCount} variant='destructive' />
+              <TabHeader
+                id="frontendErrors"
+                title="Console output"
+                count={frontendErrorCount}
+                variant="destructive"
+              />
               {diagnosticData.entityInfo && <TabsTrigger value="entity">Entity info</TabsTrigger>}
-              {diagnosticData.queryResults?.row_count &&
-                diagnosticData.queryResults?.row_count > 0 && (
-                  <TabHeader
-                    id="queryResults"
-                    title="Query Results"
-                    count={diagnosticData.queryResults?.row_count}
-                  />
-                )}
+              {diagnosticData.queryResults && (
+                <TabHeader
+                  id="queryResults"
+                  title="Query Results"
+                  count={diagnosticData.queryResults.row_count}
+                />
+              )}
               <TabsTrigger value="raw">Raw Data</TabsTrigger>
             </TabsList>
           </div>
@@ -93,17 +97,17 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
               <RawContent content={diagnosticData.bugReportDetails} />
             </TabsContent>
           )}
-          {diagnosticData.backendErrors && diagnosticData.backendErrors.length > 0 && (
+          {diagnosticData.backendErrors && (
             <TabsContent value="backendErrors" className="h-[calc(100%-3rem)]">
               <LogsTable logs={diagnosticData.backendErrors} title="Backend Errors" />
             </TabsContent>
           )}
-          {diagnosticData.userLogs && diagnosticData.userLogs.length > 0 && (
+          {diagnosticData.userLogs && (
             <TabsContent value="userLogs" className="h-[calc(100%-3rem)]">
               <LogsTable logs={diagnosticData.userLogs} title="User Logs" />
             </TabsContent>
           )}
-          {diagnosticData.logs && diagnosticData.logs.length > 0 && (
+          {diagnosticData.logs && (
             <TabsContent value="logs" className="h-[calc(100%-3rem)]">
               <LogsTable logs={diagnosticData.logs} title="System Logs" />
             </TabsContent>
@@ -119,7 +123,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
               <RawContent content={diagnosticData.entityInfo} />
             </TabsContent>
           )}
-          {diagnosticData.queryResults && diagnosticData.queryResults.row_count > 0 && (
+          {diagnosticData.queryResults && (
             <TabsContent value="queryResults" className="h-[calc(100%-3rem)]">
               <QueryResultsPanel data={diagnosticData.queryResults} />
             </TabsContent>
