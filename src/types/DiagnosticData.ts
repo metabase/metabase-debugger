@@ -1,5 +1,3 @@
-import { QueryResults } from './QueryResults'
-
 export interface DiagnosticData {
   url: string
   description?: string
@@ -18,5 +16,5 @@ export interface DiagnosticData {
   backendErrors: any[]
   userLogs: any[]
   logs: any[]
-  queryResults?: QueryResults
+  queryResults?: Record<string, any>
 }
