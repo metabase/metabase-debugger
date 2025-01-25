@@ -20,13 +20,14 @@ interface TabHeaderProps {
   id: string
   title: string
   count: number | undefined
+  variant?: 'destructive' | 'light'
 }
 
-const TabHeader = ({ id, title, count }: TabHeaderProps) => {
+const TabHeader = ({ id, title, count, variant = 'light' }: TabHeaderProps) => {
   return (
     <TabsTrigger value={id} className="tabs-trigger">
       {title}
-      <Badge variant="destructive" className="ml-2">
+      <Badge variant={variant} className="ml-2">
         {count}
       </Badge>
     </TabsTrigger>
@@ -64,6 +65,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
                   id="backendErrors"
                   title="Backend Errors"
                   count={diagnosticData.backendErrors.length}
+                  variant="destructive"
                 />
               )}
               {diagnosticData.userLogs?.length > 0 && (
@@ -72,7 +74,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
               {diagnosticData.logs?.length > 0 && (
                 <TabHeader id="logs" title="System Logs" count={diagnosticData.logs.length} />
               )}
-              <TabHeader id="frontendErrors" title="Console output" count={frontendErrorCount} />
+              <TabHeader id="frontendErrors" title="Console output" count={frontendErrorCount} variant='destructive' />
               {diagnosticData.entityInfo && <TabsTrigger value="entity">Entity info</TabsTrigger>}
               {diagnosticData.queryResults?.row_count &&
                 diagnosticData.queryResults?.row_count > 0 && (

@@ -31,7 +31,11 @@ export const BrowserInfo = ({ browserInfo }: BrowserInfoProps) => {
       )}
       {browserInfo.language && (
         <Badge variant="secondary" className="flex space-x-1">
-          <Languages className="inline-block stroke-gray-600" width={ICON_SIZE} height={ICON_SIZE} />{' '}
+          <Languages
+            className="inline-block stroke-gray-600"
+            width={ICON_SIZE}
+            height={ICON_SIZE}
+          />{' '}
           <span>{browserInfo.language}</span>
         </Badge>
       )}
