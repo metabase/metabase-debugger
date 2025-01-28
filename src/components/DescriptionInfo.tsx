@@ -24,9 +24,11 @@ export const DescriptionInfo = ({ diagnosticData }: DescriptionInfoProps) => {
           </a>
         </Badge>
       )}
-      <p className="border-l-4 border-sky-600 p-2 font-mono text-xs ml-1">
-        {diagnosticData.description || <em>No description provided</em>}
-      </p>
+      <div className="border-l-4 border-sky-600 p-2 font-mono text-xs ml-1 max-h-32 overflow-y-auto">
+        <pre>
+          {diagnosticData.description || <em>No description provided</em>}
+        </pre>
+      </div>
     </div>
   )
 }
