@@ -20,7 +20,7 @@ describe('RawContent', () => {
     expect(() => render(<RawContent content={{}} />)).not.toThrow()
   })
 
-  it.only('displays JSON content correctly', () => {
+  it('displays JSON content correctly', () => {
     render(<RawContent content={sampleContent} />)
     expect(screen.getByText(/first/)).toBeInTheDocument()
     expect(screen.getByText(/cherry/)).toBeInTheDocument()
