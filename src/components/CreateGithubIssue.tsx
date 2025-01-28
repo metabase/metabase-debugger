@@ -10,7 +10,6 @@ interface CreateGithubIssueProps {
 
 export function CreateGithubIssue({ diagnosticData, slackFileId }: CreateGithubIssueProps) {
   const createGithubIssue = () => {
-    const debuggerUrl = window.location.href
     const slackFileUrl = slackFileId
       ? `https://metaboat.slack.com/files/U02T6V8MXN2/${slackFileId}/diagnostic-info.json`
       : null
@@ -26,13 +25,12 @@ ${diagnosticData.description || 'No description provided'}
 ### Links
 - Original URL: ${diagnosticData.url || 'N/A'}
 ${slackFileUrl ? `- Slack File: ${slackFileUrl}` : ''}
-- Bug Report Debugger: ${debuggerUrl}
 `
 
     const githubUrl = new URL('https://github.com/metabase/metabase/issues/new')
     githubUrl.searchParams.set('title', issueTitle)
     githubUrl.searchParams.set('body', issueBody)
-    githubUrl.searchParams.set('labels', 'Bug')
+    githubUrl.searchParams.set('labels', 'Type:Bug')
 
     window.open(githubUrl.toString(), '_blank')
   }
