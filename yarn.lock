@@ -1612,13 +1612,6 @@ convert-source-map@^2.0.0:
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
 
-copy-to-clipboard@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/copy-to-clipboard/-/copy-to-clipboard-3.3.3.tgz#55ac43a1db8ae639a4bd99511c148cdd1b83a1b0"
-  integrity sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==
-  dependencies:
-    toggle-selection "^1.0.6"
-
 cross-spawn@^7.0.0, cross-spawn@^7.0.2:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
@@ -3718,13 +3711,6 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
-react18-json-view@^0.2.9-canary.9:
-  version "0.2.9-canary.9"
-  resolved "https://registry.yarnpkg.com/react18-json-view/-/react18-json-view-0.2.9-canary.9.tgz#ce9114a7c3ed9d3b4e2a31226355d4481e24556a"
-  integrity sha512-JxRt0HKmp2onr2oldvmgeE5dFvWncmO7KrPXFDfWRjrmFodOkpk4DhCbsjXGIMXzUHRSf2VPrcc9WTcpp5pwwA==
-  dependencies:
-    copy-to-clipboard "^3.3.3"
-
 react@^18:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"
@@ -4009,16 +3995,7 @@ streamsearch@^1.1.0:
   resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-1.1.0.tgz#404dd1e2247ca94af554e841a8ef0eaa238da764"
   integrity sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4098,14 +4075,7 @@ string.prototype.trimstart@^1.0.8:
     define-properties "^1.2.1"
     es-object-atoms "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -4295,11 +4265,6 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
-
-toggle-selection@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
-  integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
 totalist@^3.0.0:
   version "3.0.1"

@@ -1,19 +1,23 @@
 import { ScrollArea } from '@radix-ui/react-scroll-area'
-import JsonView from 'react18-json-view'
-import 'react18-json-view/src/style.css'
 
 interface RawContentProps {
-  content: object
+  content: Record<string, any> | Record<string, any>[]
 }
 
 const RawContent: React.FC<RawContentProps> = ({ content }) => {
+  if (!content) {
+    return null
+  }
+
   return (
-    <div className="h-full">
+    <div className="h-[calc(100vh-24rem)] flex flex-col">
       <div className="text-sm text-muted-foreground pb-2">
         Press <kbd>{navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}</kbd>+<kbd>F</kbd> to search
       </div>
-      <ScrollArea className="h-[calc(100%-3rem)] w-full rounded-md border">
-        <JsonView className="text-xs" theme="winter-is-coming" src={content} />
+      <ScrollArea className="h-[calc(100vh-24rem)] w-full border overflow-auto bg-gray-100 rounded-md ">
+        <pre className="text-xs h-full flex p-4 whitespace-pre-wrap">
+          {JSON.stringify(content, null, 2)}
+        </pre>
       </ScrollArea>
     </div>
   )
