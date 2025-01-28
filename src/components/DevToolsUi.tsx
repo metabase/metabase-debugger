@@ -76,7 +76,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
               <TabHeader id="logs" title="System Logs" count={diagnosticData?.logs?.length} />
               <TabHeader
                 id="frontendErrors"
-                title="Browser errors"
+                title="Browser console"
                 count={frontendErrorCount}
                 variant="destructive"
               />

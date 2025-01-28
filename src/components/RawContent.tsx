@@ -10,11 +10,11 @@ const RawContent: React.FC<RawContentProps> = ({ content }) => {
   }
 
   return (
-    <div className="h-[calc(100vh-24rem)] flex flex-col">
+    <div className="h-[calc(100vh-16rem)] flex flex-col">
       <div className="text-sm text-muted-foreground pb-2">
         Press <kbd>{navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}</kbd>+<kbd>F</kbd> to search
       </div>
-      <ScrollArea className="h-[calc(100vh-24rem)] w-full border overflow-auto bg-gray-100 rounded-md ">
+      <ScrollArea className="h-full w-full border overflow-auto bg-gray-100 rounded-md ">
         <pre className="text-xs h-full flex p-4 whitespace-pre-wrap">
           {JSON.stringify(content, null, 2)}
         </pre>

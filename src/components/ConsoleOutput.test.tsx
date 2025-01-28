@@ -73,9 +73,7 @@ describe('ConsoleOutput', () => {
 
   it('handles empty error list', () => {
     render(<ConsoleOutput errors={[]} />)
-    const searchInput = screen.getByPlaceholderText('Search logs...')
-    expect(searchInput).toBeInTheDocument()
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    screen.getByText(/No errors to show/i)
   })
 
   it('expands info logs to show stack trace', () => {

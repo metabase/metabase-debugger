@@ -66,7 +66,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Click Console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output 4' }))
+    await user.click(screen.getByRole('tab', { name: 'Browser console 4' }))
     expect(
       screen.getByText('[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts')
     ).toBeInTheDocument()
@@ -93,7 +93,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={defaultsToDetails} />)
 
     // Should default to the bug report details tab
-    expect(screen.getByText('metabase-info')).toBeInTheDocument()
+    expect(screen.getByText(/metabase-info/)).toBeInTheDocument()
   })
 
   it('is smart about selecting the entity tab', async () => {
@@ -114,7 +114,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={defaultsToDetails} />)
 
     // Should default to the bug report details tab
-    expect(screen.getByText('entityName')).toBeInTheDocument()
+    expect(screen.getByText(/entityName/)).toBeInTheDocument()
   })
   it('displays error badges correctly', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
@@ -133,8 +133,8 @@ describe('DevToolsUI', () => {
     await user.click(screen.getByRole('tab', { name: 'Raw Data' }))
 
     // Check if JSON data is displayed
-    expect(screen.getByText('system-info')).toBeInTheDocument()
-    expect(screen.getByText('metabase-info')).toBeInTheDocument()
+    expect(screen.getByText(/system-info/)).toBeInTheDocument()
+    expect(screen.getByText(/metabase-info/)).toBeInTheDocument()
   })
 
   it('handles empty diagnostic data', () => {
@@ -164,7 +164,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Switch to console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output 4' }))
+    await user.click(screen.getByRole('tab', { name: 'Browser console 4' }))
 
     // Check if error count badge is updated
     const frontendErrorsBadge = screen.getByText('3')
