@@ -43,7 +43,7 @@ export default function Home({
         })
         .catch((err) => {
           console.error('Error fetching Slack file:', err)
-          setError('Failed to fetch file from Slack. Please check the fileId and try again.')
+          setError('Failed to fetch file from Slack. ' + err?.message)
         })
         .finally(() => {
           setIsLoading(false)
@@ -57,12 +57,13 @@ export default function Home({
         <div className="flex-grow flex items-center justify-center">
           <p>Loading file from Slack...</p>
         </div>
-      ) : error ? (
-        <div className="flex-grow flex items-center justify-center">
-          <p className="text-red-500">{error}</p>
-        </div>
       ) : !diagnosticData ? (
-        <div className="flex-grow flex items-center justify-center">
+        <div className="flex-grow flex flex-col items-center justify-center">
+          { error && (
+            <div className="flex items-center justify-center p-12">
+              <p className="text-red-500">{error}</p>
+            </div>
+          )}
           <UploadDropzone onFileUpload={handleFileUpload} />
         </div>
       ) : (
