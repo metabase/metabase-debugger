@@ -1,7 +1,7 @@
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 
 interface RawContentProps {
-  content: Record<string, any> | Record<string, any>[]
+  content: Record<string, any> | undefined
 }
 
 const RawContent: React.FC<RawContentProps> = ({ content }) => {

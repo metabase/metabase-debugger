@@ -19,17 +19,25 @@ interface DevToolsUIProps {
 interface TabHeaderProps {
   id: string
   title: string
-  count: number | undefined
+  count: number | null
   variant?: 'destructive' | 'light'
 }
 
 const TabHeader = ({ id, title, count, variant = 'light' }: TabHeaderProps) => {
+  if (count == null) {
+    return null;
+  }
+
+  const hasCount = count > -1;
+
   return (
     <TabsTrigger value={id} className="tabs-trigger">
       {title}
-      <Badge variant={variant} className="ml-2">
-        {count}
-      </Badge>
+      {hasCount && (
+        <Badge variant={variant} className="ml-2">
+          {count}
+        </Badge>
+      )}
     </TabsTrigger>
   )
 }
@@ -57,77 +65,77 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
         <Tabs defaultValue={initialTab} className="w-full">
           <div className="w-full bg-background z-10">
             <TabsList className="tabs-list mb-4">
-              {diagnosticData.bugReportDetails && (
-                <TabsTrigger value="details">Details</TabsTrigger>
-              )}
-              {diagnosticData.backendErrors && (
-                <TabHeader
-                  id="backendErrors"
-                  title="Backend Errors"
-                  count={diagnosticData.backendErrors.length}
-                  variant="destructive"
-                />
-              )}
-              {diagnosticData.userLogs && (
-                <TabHeader id="userLogs" title="User Logs" count={diagnosticData.userLogs.length} />
-              )}
-              {diagnosticData.logs && (
-                <TabHeader id="logs" title="System Logs" count={diagnosticData.logs.length} />
-              )}
+              <TabHeader
+                id="details"
+                title="Details"
+                count={-1}
+              />
+              <TabHeader
+                id="backendErrors"
+                title="Backend Errors"
+                count={diagnosticData?.backendErrors?.length}
+                variant="destructive"
+              />
+              <TabHeader
+                id="userLogs"
+                title="User Logs"
+                count={diagnosticData?.userLogs?.length}
+              />
+              <TabHeader
+                id="logs"
+                title="System Logs"
+                count={diagnosticData?.logs?.length}
+              />
               <TabHeader
                 id="frontendErrors"
-                title="Console output"
+                title="Browser errors"
                 count={frontendErrorCount}
                 variant="destructive"
               />
-              {diagnosticData.entityInfo && <TabsTrigger value="entity">Entity info</TabsTrigger>}
-              {diagnosticData.queryResults && (
-                <TabHeader
-                  id="queryResults"
-                  title="Query Results"
-                  count={diagnosticData.queryResults.row_count}
-                />
-              )}
-              <TabsTrigger value="raw">Raw Data</TabsTrigger>
+              <TabHeader
+                id="entity"
+                title="Entity info"
+                count={diagnosticData.entityInfo ? -1 : null}
+                variant="destructive"
+              />
+              <TabHeader
+                id="queryResults"
+                title="Query Results"
+                count={diagnosticData?.queryResults?.row_count ?? null}
+              />
+              <TabHeader
+                id="raw"
+                title="Raw Data"
+                count={-1}
+              />
             </TabsList>
           </div>
 
-          {diagnosticData.bugReportDetails && (
-            <TabsContent value="details" className="h-[calc(100%-3rem)]">
-              <RawContent content={diagnosticData.bugReportDetails} />
-            </TabsContent>
-          )}
-          {diagnosticData.backendErrors && (
-            <TabsContent value="backendErrors" className="h-[calc(100%-3rem)]">
-              <LogsTable logs={diagnosticData.backendErrors} title="Backend Errors" />
-            </TabsContent>
-          )}
-          {diagnosticData.userLogs && (
-            <TabsContent value="userLogs" className="h-[calc(100%-3rem)]">
-              <LogsTable logs={diagnosticData.userLogs} title="User Logs" />
-            </TabsContent>
-          )}
-          {diagnosticData.logs && (
-            <TabsContent value="logs" className="h-[calc(100%-3rem)]">
-              <LogsTable logs={diagnosticData.logs} title="System Logs" />
-            </TabsContent>
-          )}
+          <TabsContent value="details" className="h-[calc(100%-3rem)]">
+            <RawContent content={diagnosticData.bugReportDetails} />
+          </TabsContent>
+          <TabsContent value="backendErrors" className="h-[calc(100%-3rem)]">
+            <LogsTable logs={diagnosticData.backendErrors} title="Backend Errors" />
+          </TabsContent>
+          <TabsContent value="userLogs" className="h-[calc(100%-3rem)]">
+            <LogsTable logs={diagnosticData.userLogs} title="User Logs" />
+          </TabsContent>
+
+          <TabsContent value="logs" className="h-[calc(100%-3rem)]">
+            <LogsTable logs={diagnosticData.logs} title="System Logs" />
+          </TabsContent>
           <TabsContent value="frontendErrors" className="h-[calc(100%-3rem)]">
             <ConsoleOutput
               errors={diagnosticData.frontendErrors}
               onErrorCountChange={setFrontendErrorCount}
             />
           </TabsContent>
-          {diagnosticData.entityInfo && (
-            <TabsContent value="entity" className="h-[calc(100%-3rem)]">
-              <RawContent content={diagnosticData.entityInfo} />
-            </TabsContent>
-          )}
-          {diagnosticData.queryResults && (
-            <TabsContent value="queryResults" className="h-[calc(100%-3rem)]">
-              <QueryResultsPanel data={diagnosticData.queryResults} />
-            </TabsContent>
-          )}
+          <TabsContent value="entity" className="h-[calc(100%-3rem)]">
+            <RawContent content={diagnosticData.entityInfo} />
+          </TabsContent>
+          <TabsContent value="queryResults" className="h-[calc(100%-3rem)]">
+            <QueryResultsPanel data={diagnosticData.queryResults} />
+          </TabsContent>
           <TabsContent value="raw" className="h-[calc(100%-3rem)]">
             <RawContent content={diagnosticData} />
           </TabsContent>

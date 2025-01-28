@@ -35,7 +35,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
 
   const parsedErrors = useMemo(() => {
     const parsed = errors.map((error, index) => {
-      const cleanError = error.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
+      const cleanError = error?.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
       let message = cleanError
       let jsonData = null
       let stack = ''
@@ -96,6 +96,10 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
       ),
     [parsedErrors, searchQuery]
   )
+
+  if(!parsedErrors.length) {
+    return <div className="p-5">No errors to show 🙂</div>
+  }
 
   return (
     <>

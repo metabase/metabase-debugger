@@ -17,7 +17,7 @@ interface LogEntry {
 }
 
 interface LogsTableProps {
-  logs: LogEntry[]
+  logs: LogEntry[] | null
   title: string
 }
 
@@ -123,12 +123,12 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
 
   const filteredLogs = useMemo(
     () =>
-      logs.filter(
+      logs?.filter(
         (log) =>
           log.msg?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           log.level?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           log.fqns?.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
+      ) ?? [],
     [logs, searchQuery]
   )
 
@@ -140,7 +140,11 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
     [filteredLogs]
   )
 
-  const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true)
+  const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true);
+
+  if (!logs?.length) {
+    return <div className="p-5">No logs to show 🙂</div>;
+  }
 
   return (
     <>
