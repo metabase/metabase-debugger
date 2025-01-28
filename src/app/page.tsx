@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 
 import { DevToolsUI } from '@/components/DevToolsUi'
+import { FetchError } from '@/components/FetchError'
 import { UploadDropzone } from '@/components/UploadDropzone'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
@@ -29,7 +30,11 @@ export default function Home({
     if (fileId) {
       setIsLoading(true)
       setError(null)
-      fetch(`/api/fetchSlackFile?fileId=${fileId}`)
+      fetch(`/api/fetchSlackFile?fileId=${fileId}`, {
+        headers: {
+          "authorization": localStorage.getItem('debugger-token')
+        } as any
+      })
         .then((response) => response.json())
         .then((data) => {
           if (data.error) {
@@ -59,11 +64,7 @@ export default function Home({
         </div>
       ) : !diagnosticData ? (
         <div className="flex-grow flex flex-col items-center justify-center">
-          {error && (
-            <div className="flex items-center justify-center p-12">
-              <p className="text-red-500">{error}</p>
-            </div>
-          )}
+          <FetchError error={error} />
           <UploadDropzone onFileUpload={handleFileUpload} />
         </div>
       ) : (
