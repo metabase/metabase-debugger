@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { UploadDropzone } from './UploadDropzone'
-import { render, screen } from '../test/test-utils'
+import { render, sampleDiagnosticData, screen } from '../test/test-utils'
 
 describe('UploadDropzone', () => {
   const mockOnFileUpload = vi.fn()
@@ -25,19 +25,9 @@ describe('UploadDropzone', () => {
   it('handles file upload correctly', async () => {
     const user = userEvent.setup()
 
-    const fileContent = {
-      url: 'https://test.com',
-      description: 'Test description',
-      entityInfo: {},
-
-      browserInfo: { browserName: 'Chrome' },
-      frontendErrors: [],
-      backendErrors: [],
-      userLogs: [],
-      logs: [],
-    }
-
-    const file = new File([JSON.stringify(fileContent)], 'test.json', { type: 'application/json' })
+    const file = new File([JSON.stringify(sampleDiagnosticData)], 'test.json', {
+      type: 'application/json',
+    })
 
     render(<UploadDropzone onFileUpload={mockOnFileUpload} />)
 
@@ -47,10 +37,8 @@ describe('UploadDropzone', () => {
     expect(mockOnFileUpload).toHaveBeenCalledTimes(1)
     expect(mockOnFileUpload).toHaveBeenCalledWith(
       expect.objectContaining({
-        basicInfo: expect.objectContaining({
-          url: 'https://test.com',
-          description: 'Test description',
-        }),
+        url: 'https://test.com',
+        description: 'Test description',
       })
     )
   })

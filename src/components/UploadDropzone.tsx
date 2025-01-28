@@ -20,12 +20,10 @@ const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onFileUpload }) => {
             const parsedData = JSON.parse(result)
 
             const diagnosticData: DiagnosticData = {
-              basicInfo: {
-                description: parsedData.description || 'No description provided',
-                url: parsedData.url || '',
-                bugReportDetails: parsedData.bugReportDetails || {},
-                browserInfo: parsedData.browserInfo || {},
-              },
+              description: parsedData.description || 'No description provided',
+              url: parsedData.url || '',
+              bugReportDetails: parsedData.bugReportDetails || {},
+              browserInfo: parsedData.browserInfo || {},
               entityInfo: {
                 entityName: parsedData.entityName || '',
                 ...parsedData.entityInfo,

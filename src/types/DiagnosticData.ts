@@ -1,12 +1,12 @@
 export interface DiagnosticData {
-  basicInfo: {
-    url: string
-    description?: string
-    bugReportDetails?: Record<string, any>
-    browserInfo?: Record<string, any>
+  url: string
+  description?: string
+  bugReportDetails?: {
     'metabase-info'?: Record<string, any>
     'system-info'?: Record<string, any>
+    [key: string]: any
   }
+  browserInfo?: Record<string, any>
   entityInfo: {
     entityName: string
     name: string

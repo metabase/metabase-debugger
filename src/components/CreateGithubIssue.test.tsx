@@ -5,10 +5,8 @@ import { render, screen, fireEvent } from '../test/test-utils'
 
 describe('CreateGithubIssue', () => {
   const mockDiagnosticData = {
-    basicInfo: {
-      url: 'https://test.metabase.com',
-      description: 'Test description',
-    },
+    url: 'https://test.metabase.com',
+    description: 'Test description',
     entityInfo: {
       name: 'Test Entity',
       entityName: 'Test Entity',
@@ -52,7 +50,7 @@ describe('CreateGithubIssue', () => {
 
     expect(window.open).toHaveBeenCalledWith(
       expect.stringContaining(
-        'https://github.com/metabase/metabase/issues/new?title=%5BBug+Report%5D+Test+Entity+-+https%3A%2F%2Ftest.metabase.com&body=%0A%23%23%23+Description%0ATest+description%0A%0A%23%23%23+Links%0A-+Original+URL%3A+https%3A%2F%2Ftest.metabase.com%0A-+Slack+File%3A+https%3A%2F%2Fmetaboat.slack.com%2Ffiles%2FU02T6V8MXN2%2F123ABC%2Fdiagnostic-info.json%0A-+Bug+Report+Debugger%3A+https%3A%2F%2Fdebugger.test.com%0A&labels=Bug'
+        'https://github.com/metabase/metabase/issues/new?title=%5BBug+Report%5D+Test+Entity+-+https%3A%2F%2Ftest.metabase.com&body=%0A%23%23%23+Description%0ATest+description%0A%0A%23%23%23+Links%0A-+Original+URL%3A+https%3A%2F%2Ftest.metabase.com%0A-+Slack+File%3A+https%3A%2F%2Fmetaboat.slack.com%2Ffiles%2FU02T6V8MXN2%2F123ABC%2Fdiagnostic-info.json'
       ),
       '_blank'
     )
@@ -70,15 +68,12 @@ describe('CreateGithubIssue', () => {
       '[Bug Report] Test Entity - https://test.metabase.com'
     )
     expect(url.searchParams.get('body')).toContain('Test description')
-    expect(url.searchParams.get('body')).toContain('https://debugger.test.com')
-    expect(url.searchParams.get('labels')).toBe('Bug')
+    expect(url.searchParams.get('labels')).toBe('Type:Bug')
   })
 
   it('handles missing optional data gracefully', () => {
     const minimalData = {
-      basicInfo: {
-        url: '',
-      },
+      url: '',
       entityInfo: {
         entityName: '',
         name: '',

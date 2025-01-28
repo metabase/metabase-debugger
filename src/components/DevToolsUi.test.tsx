@@ -4,43 +4,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
 import { DevToolsUI } from './DevToolsUi'
-import { render, screen } from '../test/test-utils'
+import { render, screen, sampleDiagnosticData } from '../test/test-utils'
 
 describe('DevToolsUI', () => {
-  const sampleDiagnosticData: DiagnosticData = {
-    basicInfo: {
-      url: 'https://test.com',
-      description: 'Test description',
-      bugReportDetails: {},
-      browserInfo: {
-        browserName: 'Chrome',
-        browserVersion: '100.0.0',
-        os: 'Windows',
-        osVersion: '10',
-        platform: 'Desktop',
-        language: 'en-US',
-      },
-      'metabase-info': {},
-      'system-info': {},
-    },
-    entityInfo: {
-      entityName: 'question',
-      name: "Test Question's Name",
-    },
-    frontendErrors: [
-      '"[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts\\n  × Module not found: Error message 1"',
-      '"[webpack-dev-server] ERROR in ./components/ErrorPages/tab.ts\\n  × Module not found: Error message 1"',
-      '"Warning: Something went wrong\\nStack trace for warning"',
-      '"[webpack-dev-server] Another error occurred\\nStack trace for error"',
-    ],
-    backendErrors: [
-      { message: 'Backend Error 1', timestamp: '2024-01-01' },
-      { message: 'Backend Error 2', timestamp: '2024-01-02' },
-    ],
-    userLogs: [{ message: 'User Log 1', timestamp: '2024-01-01' }],
-    logs: [{ message: 'System Log 1', timestamp: '2024-01-01' }],
-  }
-
   beforeEach(() => {
     // Mock window.open for GitHub issue creation
     vi.spyOn(window, 'open').mockImplementation(() => null)
@@ -85,17 +51,14 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Check URL and description
-    expect(screen.getByText('url')).toBeInTheDocument()
+    expect(screen.getByText('Occurred at:')).toBeInTheDocument()
     expect(screen.getByText('https://test.com')).toBeInTheDocument()
-    expect(screen.getByText('description')).toBeInTheDocument()
     expect(screen.getByText('Test description')).toBeInTheDocument()
 
     // Check browser info
-    expect(screen.getByText('browserInfo')).toBeInTheDocument()
-    expect(screen.getByText('Chrome')).toBeInTheDocument()
-    expect(screen.getByText('100.0.0')).toBeInTheDocument()
-    expect(screen.getByText('os')).toBeInTheDocument()
-    expect(screen.getByText('Windows')).toBeInTheDocument()
+    expect(screen.getByText('Chrome 100.0.0')).toBeInTheDocument()
+    expect(screen.getByText('Windows 10')).toBeInTheDocument()
+    expect(screen.getByText('en-US')).toBeInTheDocument()
   })
 
   it('switches tabs correctly', async () => {
@@ -103,12 +66,56 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Click Console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output' }))
+    await user.click(screen.getByRole('tab', { name: 'Browser console 4' }))
     expect(
       screen.getByText('[webpack-dev-server] ERROR in ./components/ErrorPages/utils.ts')
     ).toBeInTheDocument()
   })
 
+  it('is smart about selecting the details tab', async () => {
+    const defaultsToDetails: DiagnosticData = {
+      url: 'https://test.com',
+      bugReportDetails: {
+        'metabase-info': {},
+        'system-info': {},
+      },
+      browserInfo: undefined,
+      frontendErrors: [],
+      entityInfo: {
+        entityName: 'question',
+        name: "Test Question's Name",
+      },
+      backendErrors: [],
+      userLogs: [],
+      logs: [],
+    }
+
+    render(<DevToolsUI diagnosticData={defaultsToDetails} />)
+
+    // Should default to the bug report details tab
+    expect(screen.getByText(/metabase-info/)).toBeInTheDocument()
+  })
+
+  it('is smart about selecting the entity tab', async () => {
+    const defaultsToDetails: DiagnosticData = {
+      url: 'https://test.com',
+      bugReportDetails: undefined,
+      browserInfo: undefined,
+      frontendErrors: [],
+      entityInfo: {
+        entityName: 'question',
+        name: "Test Question's Name",
+      },
+      backendErrors: [],
+      userLogs: [],
+      logs: [],
+    }
+
+    render(<DevToolsUI diagnosticData={defaultsToDetails} />)
+
+    // Should default to the bug report details tab
+    expect(screen.getByText(/entityName/)).toBeInTheDocument()
+  })
   it('displays error badges correctly', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
@@ -126,18 +133,16 @@ describe('DevToolsUI', () => {
     await user.click(screen.getByRole('tab', { name: 'Raw Data' }))
 
     // Check if JSON data is displayed
-    expect(screen.getByText(/"url":/)).toBeInTheDocument()
-    expect(screen.getByText(/"description":/)).toBeInTheDocument()
+    expect(screen.getByText(/system-info/)).toBeInTheDocument()
+    expect(screen.getByText(/metabase-info/)).toBeInTheDocument()
   })
 
   it('handles empty diagnostic data', () => {
     const emptyData: DiagnosticData = {
-      basicInfo: {
-        url: '',
-        bugReportDetails: {},
-        description: '',
-        browserInfo: {},
-      },
+      url: '',
+      bugReportDetails: {},
+      description: '',
+      browserInfo: {},
       entityInfo: {
         entityName: '',
         name: '',
@@ -151,9 +156,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={emptyData} />)
 
     // Should still render without errors
-    expect(screen.getByText('url')).toBeInTheDocument()
-    expect(screen.getByText('browserInfo')).toBeInTheDocument()
-    expect(screen.getByText('description')).toBeInTheDocument()
+    expect(screen.getByText('No description provided')).toBeInTheDocument()
   })
 
   it('updates frontend error count', async () => {
@@ -161,7 +164,7 @@ describe('DevToolsUI', () => {
     render(<DevToolsUI diagnosticData={sampleDiagnosticData} />)
 
     // Switch to console output tab
-    await user.click(screen.getByRole('tab', { name: 'Console output' }))
+    await user.click(screen.getByRole('tab', { name: 'Browser console 4' }))
 
     // Check if error count badge is updated
     const frontendErrorsBadge = screen.getByText('3')
