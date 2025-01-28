@@ -59,7 +59,7 @@ export default function Home({
         </div>
       ) : !diagnosticData ? (
         <div className="flex-grow flex flex-col items-center justify-center">
-          { error && (
+          {error && (
             <div className="flex items-center justify-center p-12">
               <p className="text-red-500">{error}</p>
             </div>

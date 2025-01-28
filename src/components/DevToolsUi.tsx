@@ -25,10 +25,10 @@ interface TabHeaderProps {
 
 const TabHeader = ({ id, title, count, variant = 'light' }: TabHeaderProps) => {
   if (count == null) {
-    return null;
+    return null
   }
 
-  const hasCount = count > -1;
+  const hasCount = count > -1
 
   return (
     <TabsTrigger value={id} className="tabs-trigger">
@@ -65,27 +65,15 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
         <Tabs defaultValue={initialTab} className="w-full">
           <div className="w-full bg-background z-10">
             <TabsList className="tabs-list mb-4">
-              <TabHeader
-                id="details"
-                title="Details"
-                count={-1}
-              />
+              <TabHeader id="details" title="Details" count={-1} />
               <TabHeader
                 id="backendErrors"
                 title="Backend Errors"
                 count={diagnosticData?.backendErrors?.length}
                 variant="destructive"
               />
-              <TabHeader
-                id="userLogs"
-                title="User Logs"
-                count={diagnosticData?.userLogs?.length}
-              />
-              <TabHeader
-                id="logs"
-                title="System Logs"
-                count={diagnosticData?.logs?.length}
-              />
+              <TabHeader id="userLogs" title="User Logs" count={diagnosticData?.userLogs?.length} />
+              <TabHeader id="logs" title="System Logs" count={diagnosticData?.logs?.length} />
               <TabHeader
                 id="frontendErrors"
                 title="Browser errors"
@@ -103,11 +91,7 @@ export const DevToolsUI = ({ diagnosticData, slackFileId }: DevToolsUIProps) => 
                 title="Query Results"
                 count={diagnosticData?.queryResults?.row_count ?? null}
               />
-              <TabHeader
-                id="raw"
-                title="Raw Data"
-                count={-1}
-              />
+              <TabHeader id="raw" title="Raw Data" count={-1} />
             </TabsList>
           </div>
 

@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // const { fileId } = req.query
 
-  return res.status(403).json({ error: 'Unauthorized' });
+  return res.status(403).json({ error: 'Unauthorized' })
 
   // if (!fileId || typeof fileId !== 'string') {
   //   return res.status(400).json({ error: 'Invalid fileId' })

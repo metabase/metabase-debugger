@@ -140,10 +140,10 @@ const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
     [filteredLogs]
   )
 
-  const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true);
+  const [showOnlyMetabaseFrames, setShowOnlyMetabaseFrames] = useState(true)
 
   if (!logs?.length) {
-    return <div className="p-5">No logs to show 🙂</div>;
+    return <div className="p-5">No logs to show 🙂</div>
   }
 
   return (

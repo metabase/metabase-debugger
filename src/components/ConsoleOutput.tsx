@@ -97,7 +97,7 @@ export const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ errors, onErrorCou
     [parsedErrors, searchQuery]
   )
 
-  if(!parsedErrors.length) {
+  if (!parsedErrors.length) {
     return <div className="p-5">No errors to show 🙂</div>
   }
 
