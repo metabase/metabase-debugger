@@ -28,13 +28,16 @@ vi.mock('@/utils/slackClient', () => ({
 const mockFetch = vi.fn()
 global.fetch = mockFetch
 
-describe.skip('fetchSlackFile API', () => {
+describe('fetchSlackFile API', () => {
   let mockReq: Partial<NextApiRequest>
   let mockRes: Partial<NextApiResponse>
 
   beforeEach(() => {
     mockReq = {
       query: {},
+      headers: {
+        authorization: process.env.AUTH_SECRET,
+      },
     }
     mockRes = {
       status: vi.fn().mockReturnThis(),

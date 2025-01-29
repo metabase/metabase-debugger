@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 
 import { DevToolsUI } from '@/components/DevToolsUi'
+import { FetchError } from '@/components/FetchError'
 import { UploadDropzone } from '@/components/UploadDropzone'
 import { DiagnosticData } from '@/types/DiagnosticData'
 
@@ -14,6 +15,7 @@ export default function Home({
   const [diagnosticData, setDiagnosticData] = useState<DiagnosticData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [responseStatus, setResponseStatus] = useState<number | null>(null)
 
   const fileId = searchParams.fileId as string | undefined
 
@@ -26,11 +28,20 @@ export default function Home({
   }
 
   useMemo(() => {
+    // local storage won't work in SSR
+    const token = typeof localStorage !== 'undefined' && localStorage.getItem('debugger-token')
     if (fileId) {
       setIsLoading(true)
       setError(null)
-      fetch(`/api/fetchSlackFile?fileId=${fileId}`)
-        .then((response) => response.json())
+      fetch(`/api/fetchSlackFile?fileId=${fileId}`, {
+        headers: {
+          authorization: token,
+        } as any,
+      })
+        .then((response) => {
+          setResponseStatus(response.status)
+          return response.json()
+        })
         .then((data) => {
           if (data.error) {
             throw new Error(data.error)
@@ -59,11 +70,7 @@ export default function Home({
         </div>
       ) : !diagnosticData ? (
         <div className="flex-grow flex flex-col items-center justify-center">
-          {error && (
-            <div className="flex items-center justify-center p-12">
-              <p className="text-red-500">{error}</p>
-            </div>
-          )}
+          <FetchError error={error} statusCode={responseStatus} />
           <UploadDropzone onFileUpload={handleFileUpload} />
         </div>
       ) : (
