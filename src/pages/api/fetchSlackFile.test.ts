@@ -37,7 +37,7 @@ describe('fetchSlackFile API', () => {
       query: {},
       headers: {
         authorization: process.env.AUTH_SECRET,
-      }
+      },
     }
     mockRes = {
       status: vi.fn().mockReturnThis(),

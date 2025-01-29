@@ -29,14 +29,14 @@ export default function Home({
 
   useMemo(() => {
     // local storage won't work in SSR
-    const token = typeof localStorage !== 'undefined' && localStorage.getItem('debugger-token');
+    const token = typeof localStorage !== 'undefined' && localStorage.getItem('debugger-token')
     if (fileId) {
       setIsLoading(true)
       setError(null)
       fetch(`/api/fetchSlackFile?fileId=${fileId}`, {
         headers: {
-          "authorization": token,
-        } as any
+          authorization: token,
+        } as any,
       })
         .then((response) => {
           setResponseStatus(response.status)

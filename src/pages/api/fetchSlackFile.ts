@@ -5,7 +5,7 @@ import { slackClient } from '@/utils/slackClient'
 import { isAuthorized } from './auth'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  isAuthorized(req, res);
+  isAuthorized(req, res)
 
   const { fileId } = req.query
   if (!fileId || typeof fileId !== 'string') {
