@@ -53,6 +53,24 @@ describe('fetchSlackFile API', () => {
     expect(mockRes.json).toHaveBeenCalledWith({ error: 'Invalid fileId' })
   })
 
+  it('returns 403 if not authorized', async () => {
+    mockReq.headers = { authorization: 'invalid' }
+    await handler(mockReq as NextApiRequest, mockRes as NextApiResponse)
+
+    expect(mockRes.status).toHaveBeenCalledWith(403)
+    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Unauthorized' })
+  })
+
+  it('does not call Slack API if not authorized', async () => {
+    const slackSpy = vi.spyOn(slackClient.files, 'info')
+    mockReq.headers = { authorization: 'invalid' }
+    await handler(mockReq as NextApiRequest, mockRes as NextApiResponse)
+
+    expect(mockRes.status).toHaveBeenCalledWith(403)
+    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Unauthorized' })
+    expect(slackSpy).not.toHaveBeenCalled()
+  })
+
   it('returns 400 if fileId is not a string', async () => {
     mockReq.query = { fileId: ['multiple', 'values'] }
 
@@ -87,6 +105,7 @@ describe('fetchSlackFile API', () => {
   })
 
   it('successfully fetches and returns file content', async () => {
+    const slackSpy = vi.spyOn(slackClient.files, 'info')
     mockReq.query = { fileId: 'valid' }
     const mockFileContent = { key: 'value' }
 
@@ -111,5 +130,6 @@ describe('fetchSlackFile API', () => {
     })
     expect(mockRes.status).toHaveBeenCalledWith(200)
     expect(mockRes.json).toHaveBeenCalledWith(mockFileContent)
+    expect(slackSpy).toHaveBeenCalledOnce()
   })
 })
