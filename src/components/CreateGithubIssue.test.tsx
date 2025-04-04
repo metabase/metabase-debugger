@@ -50,7 +50,7 @@ describe('CreateGithubIssue', () => {
 
     expect(window.open).toHaveBeenCalledWith(
       expect.stringContaining(
-        'https://github.com/metabase/metabase/issues/new?title=%5BBug+Report%5D+Test+Entity+-+https%3A%2F%2Ftest.metabase.com&body=%0A%23%23%23+Description%0ATest+description%0A%0A%23%23%23+Links%0A-+Original+URL%3A+https%3A%2F%2Ftest.metabase.com%0A-+Slack+File%3A+https%3A%2F%2Fmetaboat.slack.com%2Ffiles%2FU02T6V8MXN2%2F123ABC%2Fdiagnostic-info.json'
+        'https://github.com/metabase/metabase/issues/new?title=%5BBug+Report%5D+Test+Entity+-+https%3A%2F%2Ftest.metabase.com&body=%0A%23%23%23+Description%0ATest+description%0A%0A%23%23%23+Links%0A-+Slack+File%3A+https%3A%2F%2Fmetaboat.slack.com%2Ffiles%2FU02T6V8MXN2%2F123ABC%2Fdiagnostic-info.json'
       ),
       '_blank'
     )
