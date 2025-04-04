@@ -23,7 +23,6 @@ export function CreateGithubIssue({ diagnosticData, slackFileId }: CreateGithubI
 ${diagnosticData.description || 'No description provided'}
 
 ### Links
-- Original URL: ${diagnosticData.url || 'N/A'}
 ${slackFileUrl ? `- Slack File: ${slackFileUrl}` : ''}
 `
 
