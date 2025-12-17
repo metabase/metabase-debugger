@@ -27,7 +27,6 @@ const TabHeader = ({ id, title, count, variant = 'light' }: TabHeaderProps) => {
   if (count == null) {
     return null
   }
-
   const hasCount = count > -1
 
   return (
